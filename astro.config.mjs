@@ -4,9 +4,12 @@ import sitemap from '@astrojs/sitemap';
 
 // Dominio de producción. Cambiar aquí si se publica en otro dominio.
 const SITE = 'https://www.santacristina.es';
+// Subcarpeta de publicación: '/' en el dominio propio, '/Santan_Cristina/' en GitHub Pages.
+const BASE = process.env.BASE_PATH || '/';
 
 export default defineConfig({
   site: SITE,
+  base: BASE,
   trailingSlash: 'always',
   build: { format: 'directory' },
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },

@@ -5,6 +5,7 @@
  */
 import { LANGS, PAGE_SLUGS, type Lang, type PageKey, pagePath, roomPath } from '../i18n/config';
 import { rooms, getRoom } from '../content/rooms';
+import { stripBase } from '../lib/url';
 import HomeView from '../views/HomeView.astro';
 import HotelView from '../views/HotelView.astro';
 import RoomsView from '../views/RoomsView.astro';
@@ -20,7 +21,8 @@ import TobazoView from '../views/TobazoView.astro';
 type Props = { lang: Lang; key: PageKey | 'room'; roomId?: string };
 
 export function getStaticPaths() {
-  const toParam = (p: string) => p.replace(/^\/|\/$/g, '') || undefined;
+  // Los parámetros no llevan la subcarpeta de publicación: Astro la añade él mismo.
+  const toParam = (p: string) => stripBase(p).replace(/^\/|\/$/g, '') || undefined;
   return LANGS.flatMap((lang) => [
     ...(Object.keys(PAGE_SLUGS) as PageKey[]).map((key) => ({
       params: { path: toParam(pagePath(key, lang)) },

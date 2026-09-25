@@ -23,7 +23,22 @@ para este volumen de tráfico). También sirve **Vercel** o un servidor propio c
 
 ---
 
-## 2A. Netlify (recomendado)
+## 2·0. GitHub Pages (previsualización)
+
+El repositorio incluye `.github/workflows/deploy-pages.yml`, que publica una copia de la web en
+**https://enriquerodrigueztrenchsporta.github.io/Santan_Cristina/** cada vez que se sube un cambio a `main`.
+
+- La web se compila con `BASE_PATH=/Santan_Cristina/` (todas las rutas llevan esa subcarpeta) y con
+  `PUBLIC_PREVIEW=true`, que añade `noindex` para que Google no confunda la copia con la web oficial.
+- Activación (una sola vez): en GitHub, **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+- GitHub Pages no admite redirecciones 301: para la web oficial en `santacristina.es` usa una de las opciones siguientes.
+- Para probarlo en local igual que en Pages:
+  ```bash
+  BASE_PATH=/Santan_Cristina/ npm run build     # en Git Bash de Windows: MSYS_NO_PATHCONV=1 BASE_PATH=…
+  node scripts/serve.mjs 4321 /Santan_Cristina  # abre http://127.0.0.1:4321/Santan_Cristina/
+  ```
+
+## 2A. Netlify (recomendado para la web oficial)
 
 1. [app.netlify.com](https://app.netlify.com) → **Add new site → Import an existing project** → GitHub → elige el repositorio.
 2. Configuración de build:

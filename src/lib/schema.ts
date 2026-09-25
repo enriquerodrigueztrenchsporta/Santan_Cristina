@@ -1,4 +1,5 @@
 import { SITE_URL, booking, hotel, restaurant } from '../config/site';
+import { stripBase } from './url';
 import { aboutPage } from '../content/hotel';
 import { elBoj } from '../content/restaurant';
 import type { Room } from '../content/rooms';
@@ -16,7 +17,7 @@ const HOTEL_ID = `${SITE_URL}/#hotel`;
 const RESTAURANT_ID = `${SITE_URL}/#el-boj`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
-export const abs = (path: string) => new URL(path, SITE_URL).toString();
+export const abs = (path: string) => new URL(stripBase(path), SITE_URL).toString();
 
 function postalAddress() {
   return {

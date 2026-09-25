@@ -2,7 +2,8 @@
  * Servidor estático mínimo para probar dist/ localmente y en los tests E2E.
  * Imita el comportamiento de un hosting estático: /ruta/ → /ruta/index.html,
  * 404.html para rutas inexistentes y redirecciones 301 de redirects.json.
- *   node scripts/serve.mjs [puerto]
+ *   node scripts/serve.mjs [puerto] [subcarpeta]
+ * Con subcarpeta (p. ej. /Santan_Cristina) imita GitHub Pages.
  */
 import http from 'node:http';
 import fs from 'node:fs';
@@ -10,6 +11,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 
 const PORT = Number(process.argv[2] ?? 4400);
+const BASE = (process.argv[3] ?? '').replace(/\/$/, '');
 const ROOT = path.resolve('dist');
 const { redirects } = JSON.parse(fs.readFileSync('redirects.json', 'utf8'));
 const TYPES = {
@@ -47,7 +49,14 @@ function send(req, res, status, file) {
 http
   .createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
-    const pathname = decodeURIComponent(url.pathname);
+    let pathname = decodeURIComponent(url.pathname);
+    if (BASE) {
+      if (!pathname.startsWith(BASE)) {
+        res.writeHead(404);
+        return res.end();
+      }
+      pathname = pathname.slice(BASE.length) || '/';
+    }
     if (redirects[pathname]) {
       res.writeHead(301, { Location: redirects[pathname] });
       return res.end();
@@ -59,7 +68,7 @@ http
     }
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
       if (!pathname.endsWith('/')) {
-        res.writeHead(301, { Location: `${pathname}/${url.search}` });
+        res.writeHead(301, { Location: `${BASE}${pathname}/${url.search}` });
         return res.end();
       }
       file = path.join(file, 'index.html');

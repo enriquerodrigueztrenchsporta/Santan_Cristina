@@ -37,6 +37,8 @@ export const PAGE_SLUGS: Record<PageKey, L> = {
   tobazo: { es: 'hotel-tobazo', en: 'hotel-tobazo', fr: 'hotel-tobazo' },
 };
 
+import { withBase } from '../lib/url';
+
 function prefix(lang: Lang): string {
   return lang === DEFAULT_LANG ? '/' : `/${lang}/`;
 }
@@ -44,7 +46,7 @@ function prefix(lang: Lang): string {
 /** URL relativa (con barra final) de una página en un idioma. */
 export function pagePath(key: PageKey, lang: Lang): string {
   const slug = PAGE_SLUGS[key][lang];
-  return slug ? `${prefix(lang)}${slug}/` : prefix(lang);
+  return withBase(slug ? `${prefix(lang)}${slug}/` : prefix(lang));
 }
 
 /** URL de una ficha de habitación. */

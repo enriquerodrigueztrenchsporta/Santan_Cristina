@@ -2,6 +2,7 @@
 import type { ImageMetadata } from 'astro';
 import Photo from './Photo.astro';
 import { videoSources } from '../lib/media';
+import { withBase } from '../lib/url';
 
 interface Props {
   video: { webm?: string; mp4?: string; mobileMp4?: string };
@@ -34,9 +35,9 @@ const sources = videoSources(video);
           aria-hidden="true"
           tabindex="-1"
           data-bg-video
-          data-webm={sources.webm}
-          data-mp4={sources.mp4}
-          data-mobile-src={sources.mobile}
+          data-webm={sources.webm && withBase(sources.webm)}
+          data-mp4={sources.mp4 && withBase(sources.mp4)}
+          data-mobile-src={sources.mobile && withBase(sources.mobile)}
         />
       )
     }

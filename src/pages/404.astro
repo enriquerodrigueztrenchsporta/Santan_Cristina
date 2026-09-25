@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Botanical from '../components/Botanical.astro';
 import { pagePath } from '../i18n/config';
+import { withBase } from '../lib/url';
 ---
 
 <BaseLayout
@@ -10,7 +11,7 @@ import { pagePath } from '../i18n/config';
   pageKey="404"
   title="Página no encontrada | Hotel Santa Cristina Petit Spa"
   description="La página que buscas no existe o ha cambiado de dirección."
-  alternates={{ es: '/404/', en: '/404/', fr: '/404/' }}
+  alternates={{ es: withBase('/404/'), en: withBase('/404/'), fr: withBase('/404/') }}
   noindex
   overlayHeader={false}
 >

@@ -9,6 +9,7 @@ import Analytics from '../components/Analytics.astro';
 import { SITE_URL } from '../config/site';
 import { LANGS, LANG_META, DEFAULT_LANG, type Lang, type PageKey } from '../i18n/config';
 import { useT } from '../i18n/ui';
+import { stripBase, withBase } from '../lib/url';
 
 interface Props {
   lang: Lang;
@@ -44,8 +45,10 @@ const {
 } = Astro.props;
 
 const t = useT(lang);
-const canonical = new URL(alternates[lang], SITE_URL).toString();
-const ogImageUrl = new URL(ogImage, SITE_URL).toString();
+const canonical = new URL(stripBase(alternates[lang]), SITE_URL).toString();
+const ogImageUrl = new URL(stripBase(ogImage), SITE_URL).toString();
+/** Copias de previsualización (GitHub Pages): no se indexan. */
+const isPreview = import.meta.env.PUBLIC_PREVIEW === 'true';
 ---
 
 <!doctype html>
@@ -58,14 +61,15 @@ const ogImageUrl = new URL(ogImage, SITE_URL).toString();
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+    {(noindex || isPreview) && <meta name="robots" content="noindex, follow" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
     {
       !noindex &&
         LANGS.map((l) => (
-          <link rel="alternate" hreflang={LANG_META[l].hreflang} href={new URL(alternates[l], SITE_URL).toString()} />
+          <link rel="alternate" hreflang={LANG_META[l].hreflang} href={new URL(stripBase(alternates[l]), SITE_URL).toString()} />
         ))
     }
-    {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(alternates[DEFAULT_LANG], SITE_URL).toString()} />}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(stripBase(alternates[DEFAULT_LANG]), SITE_URL).toString()} />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Hotel Santa Cristina Petit Spa" />
@@ -85,11 +89,11 @@ const ogImageUrl = new URL(ogImage, SITE_URL).toString();
     <meta name="theme-color" content="#2a1b12" />
     <meta name="format-detection" content="telephone=no" />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={withBase('/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
 
     <Font cssVariable="--font-display" preload={[{ style: 'normal' }]} />
     <Font cssVariable="--font-sans" preload />
