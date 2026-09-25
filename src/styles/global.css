@@ -1,0 +1,443 @@
+@import './tokens.css';
+
+/* ---------- Reset mínimo ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image: var(--grain);
+  color: var(--text);
+  font-family: var(--ff-sans);
+  font-size: var(--step-0);
+  line-height: var(--lh-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+img,
+picture,
+video,
+svg,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+img,
+video {
+  height: auto;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+p,
+li {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+  font-weight: inherit;
+}
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+
+/* ---------- Accesibilidad ---------- */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-s);
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.75rem 1.1rem;
+  background: var(--bark-900);
+  color: var(--text-on-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- Tipografía ---------- */
+:root {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .12 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.display,
+.h1,
+.h2,
+.h3 {
+  font-family: var(--ff-display);
+  font-weight: 330;
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+  line-height: var(--lh-tight);
+}
+.display {
+  font-size: var(--step-5);
+  font-weight: 280;
+  letter-spacing: -0.025em;
+}
+.h1 {
+  font-size: var(--step-4);
+}
+.h2 {
+  font-size: var(--step-3);
+  line-height: 1.08;
+}
+.h3 {
+  font-size: var(--step-2);
+  line-height: var(--lh-snug);
+}
+.display em,
+.h1 em,
+.h2 em,
+.h3 em {
+  font-style: italic;
+}
+.lead {
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 44ch;
+}
+.body-text {
+  color: var(--text-soft);
+  max-width: var(--measure);
+}
+.body-text > * + * {
+  margin-top: 1em;
+}
+/* Etiqueta de sección: cursiva con una hoja de haya */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: var(--step-0);
+  font-weight: 380;
+  font-optical-sizing: auto;
+  line-height: 1.3;
+  color: var(--accent-text);
+}
+.eyebrow::before {
+  content: '';
+  flex: none;
+  width: 2.2em;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+.on-dark .eyebrow,
+.eyebrow--light {
+  color: var(--gold-300);
+}
+.eyebrow--light {
+  font-weight: 460;
+  text-shadow: 0 1px 14px rgb(0 0 0 / 0.7);
+}
+.quote {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: var(--step-3);
+  line-height: 1.14;
+  font-weight: 340;
+  font-optical-sizing: auto;
+}
+/* Lista en línea con viñetas de hoja (actividades, rasgos) */
+.leaf-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  list-style: none;
+  padding: 0;
+  font-size: var(--step--1);
+}
+.leaf-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+}
+.leaf-list li + li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  margin-right: 0.9rem;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+/* ---------- Layout ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.container--narrow {
+  max-width: 900px;
+}
+.section {
+  padding-block: var(--space-3xl);
+  position: relative;
+}
+.section--tight {
+  padding-block: var(--space-2xl);
+}
+.bg-alt {
+  background: var(--grain), var(--bg-alt);
+}
+.bg-sand {
+  background: var(--grain), var(--bg-sand);
+}
+.bg-dark,
+.on-dark {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  --text: var(--text-on-dark);
+  --text-soft: var(--text-on-dark-soft);
+  --line: var(--line-on-dark);
+  --accent-text: var(--gold-300);
+}
+.stack > * + * {
+  margin-top: var(--stack-gap, var(--space-m));
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  --btn-bg: var(--bark-900);
+  --btn-fg: var(--cream);
+  --btn-border: var(--btn-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65em;
+  min-height: 48px;
+  padding: 0.85em 1.6em;
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-pill);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--ff-sans);
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+@media (max-width: 479.98px) {
+  .btn {
+    white-space: normal;
+    text-align: center;
+  }
+}
+.btn:hover {
+  --btn-bg: var(--bark-700);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--book {
+  --btn-bg: var(--amber-500);
+  --btn-fg: var(--bark-950);
+}
+.btn--book:hover {
+  --btn-bg: var(--amber-400);
+}
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--text);
+  --btn-border: currentColor;
+}
+.btn--ghost:hover {
+  --btn-bg: var(--text);
+  --btn-fg: var(--bg);
+}
+.on-dark .btn--ghost:hover,
+.btn--ghost.is-light:hover {
+  --btn-bg: var(--cream);
+  --btn-fg: var(--bark-900);
+}
+.btn--light {
+  --btn-bg: var(--cream);
+  --btn-fg: var(--bark-900);
+}
+.btn--light:hover {
+  --btn-bg: var(--sand-200);
+}
+.btn--small {
+  min-height: 40px;
+  padding: 0.6em 1.15em;
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+/* Enlace editorial: subrayado ondulado suave y flecha */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--step-0);
+  font-weight: 600;
+  color: var(--text);
+  padding-block: 0.35em;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+  transition: text-underline-offset var(--dur-m) var(--ease-out);
+}
+.link-arrow::after {
+  content: '→';
+  display: inline-block;
+  transition: transform var(--dur-m) var(--ease-out);
+}
+.link-arrow:hover {
+  text-underline-offset: 0.2em;
+}
+.link-arrow:hover::after {
+  transform: translateX(4px);
+}
+
+/* ---------- Fotografía ---------- */
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--sand-300);
+  border-radius: var(--radius-s);
+}
+/* Arco de medio punto: guiño a las portadas románicas del Camino */
+.photo--arch {
+  border-radius: var(--arch);
+  outline: 1px solid rgb(138 63 28 / 0.35);
+  outline-offset: 10px;
+  overflow: hidden;
+}
+.on-dark .photo--arch {
+  outline-color: rgb(233 194 125 / 0.35);
+}
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo--hover img {
+  transition: transform 1.4s var(--ease-out);
+}
+a:hover .photo--hover img,
+.photo--hover:hover img {
+  transform: scale(1.035);
+}
+
+/* ---------- Animaciones de entrada (solo con JS y sin reduced-motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1s var(--ease-out),
+      transform 1.1s var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .js [data-reveal='fade'] {
+    transform: none;
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .js [data-reveal-zoom] img {
+    transform: scale(1.08);
+    transition: transform 2.4s var(--ease-out);
+  }
+  .js [data-reveal-zoom].is-visible img {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Utilidades ---------- */
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+picture {
+  display: block;
+}
+.photo picture {
+  height: 100%;
+}
+
+/* Rendimiento: el navegador omite el render de las secciones fuera de pantalla. */
+main > section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}

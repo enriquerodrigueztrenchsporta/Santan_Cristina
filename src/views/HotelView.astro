@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Botanical from '../components/Botanical.astro';
+import Ridge from '../components/Ridge.astro';
+import { hotel } from '../config/site';
+import { aboutPage, history } from '../content/hotel';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { abs, breadcrumbSchema, graph, hotelSchema } from '../lib/schema';
+
+import heroImg from '../assets/img/hotel/hotel-invierno.jpg';
+import terraza from '../assets/img/hotel/terraza-verano.jpg';
+import camino from '../assets/img/pirineos/camino-santiago.jpg';
+import puente from '../assets/img/pirineos/puente.jpg';
+import salon from '../assets/img/hotel/salon-chimenea.jpg';
+import billar from '../assets/img/hotel/billar.jpg';
+import bicis from '../assets/img/hotel/guarda-bicicletas.jpg';
+import gimnasio from '../assets/img/hotel/gimnasio.jpg';
+import historica from '../assets/img/hotel/aduana-historica.jpg';
+import lema from '../assets/img/hotel/muro-lema.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'hotel');
+const schema = graph([hotelSchema(lang, abs('/og/santa-cristina.jpg')), breadcrumbSchema(crumbs)]);
+const meetingsMail = `mailto:${hotel.salesEmail}?subject=${encodeURIComponent(
+  L('Información para reuniones en Hotel Santa Cristina', 'Inquiry for meetings in Hotel Santa Cristina', "Demande d'informations pour réunions à l'Hôtel Santa Cristina"),
+)}`;
+---
+
+<BaseLayout
+  lang={lang}
+  pageKey="hotel"
+  title={seo.hotel.title[lang]}
+  description={seo.hotel.description[lang]}
+  alternates={alternatesFor('hotel')}
+  schema={schema}
+>
+  <PageHero
+    lang={lang}
+    image={heroImg}
+    alt={L('El hotel al pie de las montañas nevadas de los Pirineos', 'The hotel at the foot of the snowy Pyrenees', "L'hôtel au pied des montagnes enneigées des Pyrénées")}
+    eyebrow={aboutPage.eyebrow[lang]}
+    title={aboutPage.title[lang]}
+    crumbs={crumbs}
+    position="50% 70%"
+  />
+
+  <section class="section about-wrap">
+    <Botanical plant="roble" style="right:-7%;bottom:-16%" width="clamp(260px, 30vw, 520px)" rotate={14} />
+    <div class="container about">
+      <div class="about__text">
+        <blockquote data-reveal>
+          <p class="quote">{aboutPage.quote1[lang]}</p>
+        </blockquote>
+        <p class="lead" data-reveal>{aboutPage.quote2[lang]}</p>
+        <p class="body-text" data-reveal>{aboutPage.location[lang]}</p>
+      </div>
+      <Photo
+        src={terraza}
+        alt={L('La terraza panorámica en verano', 'The panoramic terrace in summer', 'La terrasse panoramique en été')}
+        ratio="3 / 4"
+        sizes="(min-width: 1024px) 32vw, 86vw"
+        class="about__photo"
+        arch
+        zoom
+      />
+    </div>
+  </section>
+
+  <section class="section bg-alt camino" aria-labelledby="camino-title">
+    <div class="container camino__grid">
+      <div class="camino__photos">
+        <Photo
+          src={camino}
+          alt={L(
+            'Poste con la concha del Camino de Santiago, el peregrino y las marcas blanca y roja del GR',
+            'Waymark post with the Way of St. James shell, the pilgrim and the red-and-white GR marks',
+            'Poteau avec la coquille du chemin de Saint-Jacques, le pèlerin et le balisage blanc et rouge du GR',
+          )}
+          ratio="3 / 4"
+          sizes="(min-width: 1024px) 20vw, 45vw"
+          arch
+        />
+        <Photo
+          src={puente}
+          alt={L('Caminantes cruzando un puente de piedra sobre el río', 'Walkers crossing a stone bridge over the river', 'Marcheurs traversant un pont de pierre sur la rivière')}
+          ratio="1 / 1"
+          sizes="(min-width: 1024px) 22vw, 45vw"
+          class="camino__bridge"
+        />
+      </div>
+      <div class="camino__text">
+        <SectionHeading eyebrow={aboutPage.caminoEyebrow[lang]} title={aboutPage.caminoTitle[lang]} id="camino-title" />
+        <p class="body-text" data-reveal>{aboutPage.caminoText[lang]}</p>
+        <a class="link-arrow" href={`${pagePath('pyrenees', lang)}#camino`} data-reveal
+          >{L('La etapa del Camino junto al hotel', 'The stage of the Way beside the hotel', "L'étape du Chemin près de l'hôtel")}</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-sand">
+    <div class="container services">
+      <div class="services__text">
+        <SectionHeading eyebrow={L('Estancia', 'Your stay', 'Séjour')} title={aboutPage.servicesTitle[lang]} />
+        <ul class="services__list" role="list" data-reveal>
+          {aboutPage.services[lang].map((s) => <li>{s}</li>)}
+        </ul>
+        <div class="btn-row" data-reveal>
+          <a class="btn" href={pagePath('rooms', lang)}>{t('room.all')}</a>
+          <a class="link-arrow" href={pagePath('gallery', lang)}>{t('nav.gallery')}</a>
+        </div>
+      </div>
+      <div class="services__mosaic">
+        <Photo src={salon} alt={L('Salón con chimenea', 'Lounge with fireplace', 'Salon avec cheminée')} ratio="4 / 5" sizes="(min-width: 1024px) 24vw, 45vw" class="m1" arch />
+        <Photo src={billar} alt={L('Sala de billar y futbolín', 'Snooker and table football room', 'Salle de billard et baby-foot')} ratio="4 / 3" sizes="(min-width: 1024px) 24vw, 45vw" class="m2" />
+        <Photo src={bicis} alt={L('Guarda-bicicletas con herramientas', 'Bike storage with tools', 'Local à vélos avec outils')} ratio="4 / 3" sizes="(min-width: 1024px) 24vw, 45vw" class="m3" />
+        <Photo src={gimnasio} alt={L('Gimnasio con máquinas cardiovasculares', 'Gym with cardio machines', 'Salle de sport avec appareils cardio')} ratio="4 / 5" sizes="(min-width: 1024px) 24vw, 45vw" class="m4" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section history on-dark" aria-labelledby="history-title">
+    <Ridge above="var(--bg-sand)" variant={2} />
+    <Botanical plant="haya" dark style="right:-5%;bottom:-6%" width="clamp(260px, 30vw, 520px)" rotate={14} />
+    <div class="container history__grid">
+      <div class="history__media">
+        <Photo
+          src={historica}
+          alt={L('Fotografía histórica del edificio de la aduana rodeado de nieve', 'Historic photograph of the customs building surrounded by snow', 'Photographie historique de la douane entourée de neige')}
+          ratio="3 / 2"
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="history__photo"
+        />
+        <Photo src={lema} alt={L('Inscripción en el muro de la terraza', 'Inscription on the terrace wall', 'Inscription sur le mur de la terrasse')} ratio="4 / 3" sizes="(min-width: 1024px) 20vw, 50vw" class="history__photo2" />
+      </div>
+      <div>
+        <SectionHeading eyebrow={aboutPage.historyEyebrow[lang]} title={aboutPage.historyTitle[lang]} id="history-title" />
+        <ol class="timeline" role="list">
+          {
+            history.map((h, i) => (
+              <li class="timeline__item" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+                <p class="timeline__year">{h.year[lang]}</p>
+                <h3 class="timeline__title">{h.title[lang]}</h3>
+                <p class="timeline__text">{h.text[lang]}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container meetings" data-reveal>
+      <div>
+        <p class="eyebrow">{L('Empresas', 'Business', 'Entreprises')}</p>
+        <h2 class="h3 meetings__title">{aboutPage.meetingsTitle[lang]}</h2>
+      </div>
+      <p class="body-text">{aboutPage.meetingsShort[lang]}</p>
+      <div class="btn-row">
+        <a class="btn" href={meetingsMail}>{aboutPage.meetingsCta[lang]}</a>
+        <a class="link-arrow" href={`${pagePath('weddings', lang)}#empresas`}>{t('nav.weddings')}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-wrap {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .about {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+    color: var(--text);
+  }
+  .about__text {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .about__text .quote {
+    font-size: var(--step-4);
+    line-height: 1.08;
+    max-width: 22ch;
+  }
+  .about :global(.about__photo) {
+    width: min(100%, 440px);
+    justify-self: center;
+  }
+  @media (min-width: 1024px) {
+    .about {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .camino__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .camino__photos {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+    align-items: end;
+  }
+  .camino__photos :global(.camino__bridge) {
+    margin-bottom: var(--space-xl);
+  }
+  .camino__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  @media (min-width: 1024px) {
+    .camino__grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .services {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .services__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+    align-content: start;
+  }
+  .services__list {
+    width: 100%;
+    display: grid;
+  }
+  .services__list li {
+    padding-block: 0.65rem;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (min-width: 640px) {
+    .services__list {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-l);
+    }
+  }
+  .services__mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+  }
+  .services__mosaic :global(.m2) {
+    align-self: end;
+  }
+  .services__mosaic :global(.m4) {
+    margin-top: calc(var(--space-xl) * -1);
+  }
+  @media (min-width: 1024px) {
+    .services {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .history {
+    overflow: hidden;
+    color: var(--gold-300);
+  }
+  .history__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--text-on-dark);
+  }
+  .history__media {
+    position: relative;
+    padding-bottom: var(--space-2xl);
+  }
+  .history__media :global(.history__photo) {
+    filter: sepia(0.35) contrast(1.05);
+  }
+  .history__media :global(.history__photo2) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 48%;
+    border: 8px solid var(--bark-900);
+  }
+  @media (min-width: 1024px) {
+    .history__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+    .history__media {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+  .timeline {
+    margin-top: var(--space-xl);
+    border-left: 1px solid var(--line-on-dark);
+  }
+  .timeline__item {
+    position: relative;
+    padding: 0 0 var(--space-l) var(--space-l);
+  }
+  .timeline__item::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0.45rem;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bark-900);
+    border: 1px solid var(--gold-300);
+  }
+  .timeline__year {
+    font-family: var(--ff-display);
+    font-style: italic;
+    color: var(--gold-300);
+  }
+  .timeline__title {
+    margin-top: 0.3rem;
+    font-family: var(--ff-display);
+    font-optical-sizing: auto;
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+  .timeline__text {
+    margin-top: 0.5rem;
+    color: var(--text-on-dark-soft);
+    max-width: 56ch;
+  }
+
+  .meetings {
+    display: grid;
+    gap: var(--space-m);
+    align-items: center;
+  }
+  .meetings__title {
+    margin-top: 0.4rem;
+  }
+  @media (min-width: 1024px) {
+    .meetings {
+      grid-template-columns: 1fr 1.4fr auto;
+      gap: var(--space-xl);
+    }
+  }
+</style>

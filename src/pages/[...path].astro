@@ -1,0 +1,52 @@
+---
+/**
+ * Ruta única que genera todas las páginas en ES (raíz), EN (/en/) y FR (/fr/)
+ * a partir de los slugs de src/i18n/config.ts. Cada vista monta su layout.
+ */
+import { LANGS, PAGE_SLUGS, type Lang, type PageKey, pagePath, roomPath } from '../i18n/config';
+import { rooms, getRoom } from '../content/rooms';
+import HomeView from '../views/HomeView.astro';
+import HotelView from '../views/HotelView.astro';
+import RoomsView from '../views/RoomsView.astro';
+import RoomView from '../views/RoomView.astro';
+import ElBojView from '../views/ElBojView.astro';
+import SpaView from '../views/SpaView.astro';
+import WeddingsView from '../views/WeddingsView.astro';
+import PyreneesView from '../views/PyreneesView.astro';
+import GalleryView from '../views/GalleryView.astro';
+import ContactView from '../views/ContactView.astro';
+import TobazoView from '../views/TobazoView.astro';
+
+type Props = { lang: Lang; key: PageKey | 'room'; roomId?: string };
+
+export function getStaticPaths() {
+  const toParam = (p: string) => p.replace(/^\/|\/$/g, '') || undefined;
+  return LANGS.flatMap((lang) => [
+    ...(Object.keys(PAGE_SLUGS) as PageKey[]).map((key) => ({
+      params: { path: toParam(pagePath(key, lang)) },
+      props: { lang, key } satisfies Props,
+    })),
+    ...rooms.map((room) => ({
+      params: { path: toParam(roomPath(room.slug, lang)) },
+      props: { lang, key: 'room', roomId: room.id } satisfies Props,
+    })),
+  ]);
+}
+
+const { lang, key, roomId } = Astro.props as Props;
+const views = {
+  home: HomeView,
+  hotel: HotelView,
+  rooms: RoomsView,
+  elBoj: ElBojView,
+  spa: SpaView,
+  weddings: WeddingsView,
+  pyrenees: PyreneesView,
+  gallery: GalleryView,
+  contact: ContactView,
+  tobazo: TobazoView,
+};
+const View = key === 'room' ? null : views[key];
+---
+
+{key === 'room' && roomId ? <RoomView lang={lang} room={getRoom(roomId)} /> : View && <View lang={lang} />}

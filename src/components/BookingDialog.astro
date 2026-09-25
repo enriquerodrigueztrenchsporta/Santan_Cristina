@@ -1,0 +1,192 @@
+---
+import { booking, hotel } from '../config/site';
+import { LANG_META, type Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+import Botanical from './Botanical.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const adults = Array.from({ length: booking.maxAdults }, (_, i) => i + 1);
+---
+
+<dialog id="booking-dialog" class="booking-dialog" aria-labelledby="booking-title">
+  <form
+    class="booking-form"
+    method="get"
+    action={booking.baseUrl}
+    target="_blank"
+    data-booking-form
+    data-lang={lang}
+    novalidate
+  >
+    <Botanical plant="haya" style="right:-70px;bottom:-60px" width="300px" rotate={-24} opacity={0.3} drift={0} />
+    <div class="booking-form__head">
+      <p class="eyebrow">{hotel.name}</p>
+      <h2 id="booking-title" class="h2">{t('book.title')}</h2>
+      <p class="booking-form__claim">{t('book.direct')}</p>
+    </div>
+
+    <input type="hidden" name="locale" value={LANG_META[lang].bookingLocale} />
+    <input type="hidden" name="referrer" value={booking.referrer} />
+
+    <div class="booking-form__fields">
+      <label class="field">
+        <span class="field__label">{t('book.arrival')}</span>
+        <input type="date" name="check_in_date" required data-checkin />
+      </label>
+      <label class="field">
+        <span class="field__label">{t('book.departure')}</span>
+        <input type="date" name="check_out_date" required data-checkout />
+      </label>
+      <label class="field field--small">
+        <span class="field__label">{t('book.adults')}</span>
+        <select name="number_adults">
+          {adults.map((n) => <option value={n} selected={n === 2}>{n}</option>)}
+        </select>
+      </label>
+    </div>
+    <p class="booking-form__error" role="alert" data-booking-error hidden>{t('book.dateError')}</p>
+
+    <div class="booking-form__actions">
+      <button type="submit" class="btn btn--book">{t('book.submit')}</button>
+      <a
+        class="link-arrow"
+        href={buildBookingUrl({ lang })}
+        target="_blank"
+        rel="noopener"
+        data-track="booking_click"
+        data-track-location="dialog_no_dates">{t('book.noDates')}</a
+      >
+    </div>
+    <p class="booking-form__note">{t('book.secure')}</p>
+    <p class="booking-form__help">
+      {t('book.help')}{' '}
+      <a href={`tel:${hotel.phone.tel}`}>{hotel.phone.display}</a>{' · '}
+      <a href={`https://wa.me/${hotel.whatsapp.number}`} target="_blank" rel="noopener">WhatsApp {hotel.whatsapp.display}</a>
+    </p>
+    <button type="button" class="booking-form__close" data-dialog-close aria-label={t('nav.close')}>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.5"></path></svg>
+    </button>
+  </form>
+</dialog>
+
+<style>
+  .booking-dialog {
+    width: min(640px, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: var(--cream);
+    color: var(--ink);
+    box-shadow: 0 30px 80px rgb(26 14 8 / 0.35);
+    overflow: auto;
+  }
+  .booking-dialog::backdrop {
+    background: rgb(26 14 8 / 0.72);
+    backdrop-filter: blur(3px);
+  }
+  .booking-form {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    color: var(--bark-900);
+    overflow: hidden;
+  }
+  .booking-form > :not(.botanical, .booking-form__close) {
+    position: relative;
+  }
+  .booking-form__head .h2 {
+    margin-top: 0.4rem;
+    color: var(--ink);
+  }
+  .booking-form__claim {
+    margin-top: 0.6rem;
+    color: var(--ink-soft);
+  }
+  .booking-form__fields {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .field {
+    min-width: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .field--small {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 560px) {
+    .booking-form__fields {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.7fr);
+    }
+    .field--small {
+      grid-column: auto;
+    }
+  }
+  .field__label {
+    font-size: var(--step--2);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--sand-400);
+    border-radius: var(--radius-s);
+    background: #fcf6ec;
+    color: var(--ink);
+  }
+  .field input:focus-visible,
+  .field select:focus-visible {
+    outline-offset: 0;
+    border-color: var(--bark-700);
+  }
+  .booking-form__error {
+    color: #8a2d1d;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .booking-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-m);
+  }
+  .booking-form__actions .link-arrow {
+    color: var(--ink);
+  }
+  .booking-form__note,
+  .booking-form__help {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .booking-form__help a {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .booking-form__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+  }
+</style>

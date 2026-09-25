@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import MapBlock from '../components/MapBlock.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { hotel } from '../config/site';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { abs, breadcrumbSchema, graph, hotelSchema } from '../lib/schema';
+
+import heroImg from '../assets/img/hotel/patio-nieve-noche.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'contact');
+const a = hotel.address;
+const subject = L('Consulta desde la web', 'Website enquiry', 'Demande depuis le site web');
+---
+
+<BaseLayout
+  footerAbove="var(--bg-sand)"
+  overlayHeader={false}
+  lang={lang}
+  pageKey="contact"
+  title={seo.contact.title[lang]}
+  description={seo.contact.description[lang]}
+  alternates={alternatesFor('contact')}
+  schema={graph([hotelSchema(lang, abs('/og/santa-cristina.jpg')), breadcrumbSchema(crumbs)])}
+>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={heroImg}
+    alt={L('Entrada del hotel nevada al anochecer', 'Hotel entrance in the snow at dusk', "Entrée de l'hôtel enneigée à la tombée de la nuit")}
+    eyebrow={t('nav.contact')}
+    title={L('Escríbenos, llámanos o ven a vernos', 'Write, call or come and see us', 'Écrivez-nous, appelez-nous ou venez nous voir')}
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__info">
+        <ul class="cards" role="list">
+          <li>
+            <a class="card" href={`tel:${hotel.phone.tel}`} data-track-location="contact_page">
+              <span class="card__label">{t('contact.phone')}</span>
+              <span class="card__value">{hotel.phone.display}</span>
+            </a>
+          </li>
+          <li>
+            <a class="card" href={`https://wa.me/${hotel.whatsapp.number}`} target="_blank" rel="noopener" data-track-location="contact_page">
+              <span class="card__label">{t('contact.phone')} 2 · WhatsApp</span>
+              <span class="card__value">{hotel.mobile.display}</span>
+            </a>
+          </li>
+          <li>
+            <a class="card" href={`mailto:${hotel.email}`} data-track-location="contact_page">
+              <span class="card__label">{t('contact.email')}</span>
+              <span class="card__value card__value--mail">{hotel.email}</span>
+            </a>
+          </li>
+          <li>
+            <a class="card" href={`mailto:${hotel.salesEmail}`} data-track-location="contact_page_sales">
+              <span class="card__label">{L('Bodas, grupos y empresas', 'Weddings, groups and business', 'Mariages, groupes et entreprises')}</span>
+              <span class="card__value card__value--mail">{hotel.salesEmail}</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="contact__address">
+          <h2 class="h3">{t('contact.address')}</h2>
+          <address>
+            {hotel.name}<br />
+            {a.street}<br />
+            {a.postalCode} {a.locality}<br />
+            {a.region}, {a.countryName[lang]}
+          </address>
+          <div class="btn-row">
+            <a class="btn" href={hotel.googleMaps.directions} target="_blank" rel="noopener" data-track-location="contact_page">{t('contact.directions')}</a>
+            <a class="link-arrow" href={pagePath('pyrenees', lang)}>{t('nav.pyrenees')}</a>
+          </div>
+        </div>
+      </div>
+      <MapBlock lang={lang} />
+    </div>
+  </section>
+
+  <section class="section bg-sand" aria-labelledby="form-title">
+    <div class="container contact-form">
+      <SectionHeading eyebrow={t('nav.contact')} title={L('Enviar una consulta', 'Send an enquiry', 'Nous écrire')} id="form-title" />
+      <EnquiryForm lang={lang} id="contact-form" to={hotel.email} subject={subject} event="contact_enquiry" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  @media (min-width: 1024px) {
+    .contact {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+  .contact__info {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .cards {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  @media (min-width: 560px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .card {
+    display: grid;
+    gap: 0.4rem;
+    height: 100%;
+    padding: var(--space-m);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition: background-color var(--dur-m) var(--ease-out);
+  }
+  .card:hover {
+    background: var(--bg-alt);
+  }
+  .card__label {
+    font-size: var(--step--2);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--accent-text);
+  }
+  .card__value {
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+  .card__value--mail {
+    font-size: var(--step-0);
+    overflow-wrap: anywhere;
+  }
+  .contact__address {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: start;
+  }
+  .contact__address address {
+    font-style: normal;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .contact-form {
+    display: grid;
+    gap: var(--space-xl);
+    max-width: 900px;
+  }
+</style>

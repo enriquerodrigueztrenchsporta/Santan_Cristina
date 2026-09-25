@@ -1,0 +1,103 @@
+---
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const t = useT(Astro.props.lang);
+---
+
+<dialog id="lightbox" class="lightbox" aria-label={t('gallery.open')}>
+  <figure class="lightbox__figure">
+    <img data-lb-img alt="" />
+    <figcaption>
+      <span data-lb-caption></span>
+      <span class="lightbox__counter tabular" data-lb-counter></span>
+    </figcaption>
+  </figure>
+  <button type="button" class="lightbox__btn lightbox__prev" data-lb-prev aria-label={t('gallery.prev')}>
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M15 4l-8 8 8 8" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+  </button>
+  <button type="button" class="lightbox__btn lightbox__next" data-lb-next aria-label={t('gallery.next')}>
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+  </button>
+  <button type="button" class="lightbox__btn lightbox__close" data-lb-close aria-label={t('gallery.close')}>
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.5"></path></svg>
+  </button>
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(10 18 14 / 0.97);
+    color: var(--cream);
+  }
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+  .lightbox::backdrop {
+    background: rgb(10 18 14 / 0.9);
+  }
+  .lightbox__figure {
+    display: grid;
+    gap: 0.8rem;
+    max-width: min(92vw, 1600px);
+  }
+  .lightbox__figure img {
+    max-height: 82vh;
+    width: auto;
+    margin-inline: auto;
+    object-fit: contain;
+  }
+  .lightbox__figure figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: var(--step--1);
+    color: var(--text-on-dark-soft);
+  }
+  .lightbox__btn {
+    position: fixed;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    background: rgb(248 240 227 / 0.08);
+    color: var(--cream);
+    border-radius: 50%;
+  }
+  .lightbox__btn:hover {
+    background: rgb(248 240 227 / 0.18);
+  }
+  .lightbox__prev {
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .lightbox__next {
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .lightbox__close {
+    top: 1rem;
+    right: 1rem;
+  }
+  @media (max-width: 640px) {
+    .lightbox__prev,
+    .lightbox__next {
+      top: auto;
+      bottom: 1rem;
+      transform: none;
+    }
+  }
+</style>

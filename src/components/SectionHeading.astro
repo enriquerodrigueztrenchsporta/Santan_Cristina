@@ -1,0 +1,38 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  id?: string;
+  level?: 'h2' | 'h3';
+  align?: 'start' | 'center';
+  class?: string;
+}
+const { eyebrow, title, lead, id, level = 'h2', align = 'start', class: className } = Astro.props;
+const Tag = level;
+---
+
+<div class:list={['sh', `sh--${align}`, className]} data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <Tag class:list={[level === 'h2' ? 'h2' : 'h3', 'sh__title']} id={id}>{title}</Tag>
+  {lead && <p class="lead sh__lead">{lead}</p>}
+</div>
+
+<style>
+  .sh {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: start;
+  }
+  .sh--center {
+    justify-items: center;
+    text-align: center;
+  }
+  .sh__title {
+    max-width: 20ch;
+  }
+  .sh__lead {
+    margin-top: var(--space-2xs);
+    color: var(--text-soft);
+  }
+</style>

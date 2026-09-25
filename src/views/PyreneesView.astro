@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Botanical from '../components/Botanical.astro';
+import { pyreneesIntro, tobazo, valleyRoute } from '../content/hotel';
+import { places, pyreneesPage } from '../content/places';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { breadcrumbSchema, graph, abs } from '../lib/schema';
+
+import heroImg from '../assets/img/pirineos/valle-verano.jpg';
+import tobazoImg from '../assets/img/pirineos/hotel-tobazo.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'pyrenees');
+const pageUrl = abs(pagePath('pyrenees', lang));
+const schema = graph([
+  breadcrumbSchema(crumbs),
+  {
+    '@type': 'ItemList',
+    name: pyreneesPage.eyebrow[lang],
+    itemListElement: places.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: { '@type': 'TouristAttraction', name: p.name[lang], address: p.address, url: `${pageUrl}#${p.id}` },
+    })),
+  },
+]);
+---
+
+<BaseLayout
+  lang={lang}
+  pageKey="pyrenees"
+  title={seo.pyrenees.title[lang]}
+  description={seo.pyrenees.description[lang]}
+  alternates={alternatesFor('pyrenees')}
+  schema={schema}
+>
+  <PageHero
+    lang={lang}
+    image={heroImg}
+    alt={L('Valle verde entre montañas de los Pirineos en verano', 'Green valley among the Pyrenean mountains in summer', 'Vallée verte entre les montagnes des Pyrénées en été')}
+    eyebrow={pyreneesPage.eyebrow[lang]}
+    title={pyreneesIntro.title[lang]}
+    crumbs={crumbs}
+    position="50% 45%"
+  />
+
+  <section class="section pintro-wrap">
+    <Botanical plant="abeto" style="right:-6%;top:-18%" width="clamp(200px, 22vw, 380px)" rotate={-16} />
+    <div class="container pintro">
+      <p class="lead pintro__lead" data-reveal>{pyreneesIntro.lead[lang]}</p>
+      <div class="pintro__route" data-reveal>
+        <p class="eyebrow">{pyreneesIntro.routeTitle[lang]}</p>
+        <ol class="route" role="list">
+          {
+            valleyRoute.map((s) => (
+              <li class:list={{ here: s.highlight }}>
+                <span class="route__name">{s.name[lang]}</span>
+                <span class="route__note">{s.note[lang]}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-alt" aria-labelledby="places-title">
+    <div class="container">
+      <SectionHeading eyebrow={L('Desde el hotel', 'From the hotel', "Depuis l'hôtel")} title={pyreneesPage.eyebrow[lang]} id="places-title" />
+      <ol class="places" role="list">
+        {
+          places.map((p, i) => (
+            <li class:list={['place', { 'place--flip': i % 2 === 1 }]} id={p.id}>
+              <Photo src={p.image} alt={p.alt[lang]} ratio={i === 0 ? '3 / 4' : '4 / 3'} sizes="(min-width: 1024px) 45vw, 100vw" arch={i === 0} zoom />
+              <div class="place__text" data-reveal>
+                <p class="eyebrow">{p.tag[lang]}</p>
+                <h3 class="h2 place__name">{p.name[lang]}</h3>
+                <p class="place__addr">{p.address}</p>
+                <p class="body-text">{p.text[lang]}</p>
+                {p.links.length > 0 && (
+                  <ul class="place__links" role="list">
+                    {p.links.map((link) => (
+                      <li>
+                        <a class="link-arrow" href={link.url} target="_blank" rel="noopener">
+                          {link.label[lang]}
+                          <span class="sr-only">{t('common.newTab')}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container tobazo">
+      <Photo src={tobazoImg} alt={L('Hotel Tobazo junto a las pistas nevadas de Candanchú', 'Hotel Tobazo next to the snowy slopes of Candanchú', 'Hôtel Tobazo au pied des pistes enneigées de Candanchú')} ratio="4 / 3" sizes="(min-width: 1024px) 40vw, 100vw" />
+      <div class="tobazo__text">
+        <SectionHeading eyebrow={L('Deportes de invierno', 'Winter sports', "Sports d'hiver")} title={tobazo.title[lang]} />
+        <p class="body-text" data-reveal>{tobazo.teaser[lang]}</p>
+        <a class="link-arrow" href={pagePath('tobazo', lang)} data-reveal>{t('common.more')}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pintro-wrap {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .pintro {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--text);
+  }
+  .pintro__lead {
+    max-width: 48ch;
+  }
+  @media (min-width: 1024px) {
+    .pintro {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+  .route {
+    display: grid;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+    border-left: 1px solid var(--line);
+    padding-left: var(--space-m);
+  }
+  .route li {
+    display: grid;
+    position: relative;
+  }
+  .route li::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--space-m) * -1 - 4px);
+    top: 0.55rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bark-600);
+  }
+  .route li.here::before {
+    width: 13px;
+    height: 13px;
+    left: calc(var(--space-m) * -1 - 7px);
+    top: 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--copper-700);
+    box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 7px var(--amber-500);
+  }
+  .route__name {
+    font-family: var(--ff-display);
+    font-optical-sizing: auto;
+    font-size: var(--step-1);
+  }
+  .here .route__name {
+    font-style: italic;
+    font-size: var(--step-2);
+    color: var(--copper-700);
+  }
+  .route__note {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .places {
+    display: grid;
+    gap: var(--space-2xl);
+    margin-top: var(--space-2xl);
+  }
+  .place {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .place:first-child > :global(.photo) {
+    width: min(100%, 420px);
+    justify-self: center;
+  }
+  @media (min-width: 1024px) {
+    .place {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+    .place--flip > :first-child {
+      order: 2;
+    }
+  }
+  .place__text {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: start;
+  }
+  .place__name {
+    font-size: var(--step-3);
+  }
+  .place__addr {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .place__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem var(--space-m);
+  }
+  .tobazo {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .tobazo__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  @media (min-width: 1024px) {
+    .tobazo {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

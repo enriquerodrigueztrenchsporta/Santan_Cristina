@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import { AMENITIES, rooms, roomsPage } from '../content/rooms';
+import { seo } from '../content/seo';
+import { type Lang, roomPath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { abs, breadcrumbSchema, graph, roomSchema } from '../lib/schema';
+
+import heroImg from '../assets/img/hotel/salon-chimenea.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const crumbs = crumbsFor(lang, 'rooms');
+const schema = graph([breadcrumbSchema(crumbs), ...rooms.map((r) => roomSchema(r, lang, abs(r.images[0].src.src)))]);
+const bookingUrl = buildBookingUrl({ lang });
+---
+
+<BaseLayout
+  overlayHeader={false}
+  lang={lang}
+  pageKey="rooms"
+  title={seo.rooms.title[lang]}
+  description={seo.rooms.description[lang]}
+  alternates={alternatesFor('rooms')}
+  schema={schema}
+>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={heroImg}
+    alt={{ es: 'Salón del hotel con chimenea encendida', en: 'Hotel lounge with a lit fireplace', fr: "Salon de l'hôtel avec cheminée allumée" }[lang]}
+    eyebrow={t('nav.rooms')}
+    title={roomsPage.title[lang]}
+    lead={roomsPage.lead[lang]}
+    crumbs={crumbs}
+  >
+    <a class="btn btn--book" href={bookingUrl} target="_blank" rel="noopener" data-booking-open data-track="booking_click" data-track-location="rooms_hero"
+      >{t('book.ctaLong')}</a
+    >
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <ol class="room-list" role="list">
+        {
+          rooms.map((room, i) => (
+            <li class:list={['room-row', { 'room-row--flip': i % 2 === 1 }]}>
+              <a class="room-row__media" href={roomPath(room.slug, lang)} tabindex="-1" aria-hidden="true">
+                <Photo src={room.images[0].src} alt="" ratio="4 / 3" sizes="(min-width: 1024px) 55vw, 100vw" hover zoom />
+              </a>
+              <div class="room-row__text" data-reveal>
+                <p class="eyebrow">
+                  {room.size} m² · {t('room.upTo')} {room.maxGuests} {t('room.people')}
+                </p>
+                <h2 class="h2">
+                  <a href={roomPath(room.slug, lang)}>{room.name[lang]}</a>
+                </h2>
+                <ul class="room-row__occ" role="list">
+                  {room.occupancy[lang].map((o) => <li>{o}</li>)}
+                </ul>
+                <p class="room-row__amen">
+                  {room.amenities.slice(0, 5).map((k) => AMENITIES[k][lang]).join(' · ')}
+                </p>
+                <div class="btn-row">
+                  <a class="btn" href={roomPath(room.slug, lang)}>
+                    {t('room.view')}
+                  </a>
+                  <a
+                    class="btn btn--book"
+                    href={bookingUrl}
+                    target="_blank"
+                    rel="noopener"
+                    data-booking-open
+                    data-track="booking_click"
+                    data-track-location={`rooms_list_${room.id}`}
+                  >
+                    {t('book.cta')}
+                  </a>
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="rates-note">{t('room.ratesNote')}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .room-list {
+    display: grid;
+    gap: var(--space-3xl);
+  }
+  .room-row {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+  .room-row__text {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: start;
+  }
+  .room-row__text .h2 a {
+    text-decoration: none;
+  }
+  .room-row__text .h2 a:hover {
+    font-style: italic;
+  }
+  .room-row__occ {
+    display: grid;
+    gap: 0.2rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--accent);
+    font-size: var(--step--1);
+  }
+  .room-row__amen {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .room-row .btn-row {
+    margin-top: var(--space-2xs);
+  }
+  @media (min-width: 1024px) {
+    .room-row {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--space-2xl);
+    }
+    .room-row--flip .room-row__media {
+      order: 2;
+    }
+  }
+  .rates-note {
+    margin-top: var(--space-2xl);
+    font-size: var(--step--1);
+    color: var(--text-soft);
+    text-align: center;
+  }
+</style>

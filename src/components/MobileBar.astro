@@ -1,0 +1,104 @@
+---
+import { hotel } from '../config/site';
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+
+export type MobileBarMode = 'stay' | 'table' | 'wedding';
+
+interface Props {
+  lang: Lang;
+  mode: MobileBarMode;
+}
+const { lang, mode } = Astro.props;
+const t = useT(lang);
+---
+
+<div class="mobile-bar" data-mobile-bar>
+  {
+    mode === 'table' ? (
+      <>
+        <a class="mobile-bar__secondary" href={`tel:${hotel.phone.tel}`} data-track="restaurant_booking_click" data-track-location="mobile_bar_phone">
+          {t('contact.call')}
+        </a>
+        <a class="btn btn--book mobile-bar__primary" href="#reservar-mesa" data-track="restaurant_booking_click" data-track-location="mobile_bar">
+          {t('boj.book')}
+        </a>
+      </>
+    ) : mode === 'wedding' ? (
+      <>
+        <a class="mobile-bar__secondary" href={`tel:${hotel.phone.tel}`}>
+          {t('contact.call')}
+        </a>
+        <a class="btn btn--book mobile-bar__primary" href="#solicitar-informacion" data-track="wedding_enquiry_click" data-track-location="mobile_bar">
+          {t('cta.request')}
+        </a>
+      </>
+    ) : (
+      <>
+        <a class="mobile-bar__secondary" href={`tel:${hotel.phone.tel}`}>
+          {t('contact.call')}
+        </a>
+        <a
+          class="btn btn--book mobile-bar__primary"
+          href={buildBookingUrl({ lang })}
+          target="_blank"
+          rel="noopener"
+          data-booking-open
+          data-track="booking_click"
+          data-track-location="mobile_bar"
+        >
+          {t('book.ctaLong')}
+        </a>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .mobile-bar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--z-mobilebar);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.5rem var(--gutter) max(0.5rem, env(safe-area-inset-bottom));
+    background: rgb(31 20 14 / 0.97);
+    color: var(--cream);
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    transition: transform var(--dur-m) var(--ease-out);
+  }
+  .mobile-bar.is-hidden {
+    transform: translateY(110%);
+  }
+  .mobile-bar__secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding-inline: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-decoration: none;
+    border: 1px solid rgb(245 233 216 / 0.35);
+    border-radius: var(--radius-pill);
+  }
+  .mobile-bar__primary {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+    padding-inline: 0.8em;
+  }
+  @media (min-width: 768px) {
+    .mobile-bar {
+      display: none;
+    }
+  }
+  @media (max-width: 767.98px) {
+    :global(body) {
+      padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    }
+  }
+</style>

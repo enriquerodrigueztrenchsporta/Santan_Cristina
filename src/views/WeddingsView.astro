@@ -1,0 +1,280 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import Lightbox from '../components/Lightbox.astro';
+import Botanical from '../components/Botanical.astro';
+import Ridge from '../components/Ridge.astro';
+import { hotel } from '../config/site';
+import { weddings } from '../content/weddings';
+import { aboutPage } from '../content/hotel';
+import { seo } from '../content/seo';
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { breadcrumbSchema, graph } from '../lib/schema';
+
+import heroImg from '../assets/img/bodas/ceremonia-jardin.jpg';
+import terrazaInv from '../assets/img/bodas/terraza-invitados.jpg';
+import baile from '../assets/img/bodas/banquete-baile.jpg';
+import hotelValle from '../assets/img/hotel/patio-otono.jpg';
+import noviosPatio from '../assets/img/bodas/novios-patio.jpg';
+import ceremoniaInt from '../assets/img/bodas/ceremonia-interior.jpg';
+import mesa from '../assets/img/bodas/banquete-mesa.jpg';
+import pasillo from '../assets/img/bodas/pasillo-jardin.jpg';
+import montaje from '../assets/img/bodas/salon-montaje.jpg';
+import noviosNieve from '../assets/img/bodas/novios-nieve.jpg';
+import reuniones from '../assets/img/hotel/sala-reuniones-2.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'weddings');
+const spaceImages = [terrazaInv, baile, hotelValle];
+const strip = [
+  { src: noviosPatio, alt: L('Novios en el patio del hotel', 'The couple in the hotel courtyard', "Les mariés dans la cour de l'hôtel") },
+  { src: ceremoniaInt, alt: L('Ceremonia en una sala del hotel', 'Ceremony in a hotel room', "Cérémonie dans une salle de l'hôtel") },
+  { src: mesa, alt: L('Mesa de banquete decorada', 'Decorated banquet table', 'Table de banquet décorée') },
+  { src: pasillo, alt: L('Pasillo de ceremonia al aire libre', 'Outdoor ceremony aisle', 'Allée de cérémonie en plein air') },
+  { src: noviosNieve, alt: L('Novios ante la fachada nevada', 'The couple in front of the snowy façade', 'Les mariés devant la façade enneigée') },
+  { src: montaje, alt: L('Salón montado para la celebración', 'Room set for the celebration', 'Salle préparée pour la célébration') },
+];
+const stripLarge = await Promise.all(strip.map((s) => getImage({ src: s.src, width: Math.min(s.src.width, 1600), format: 'webp' })));
+const pdf = weddings.menuPdf[lang];
+---
+
+<BaseLayout
+  footerAbove="var(--bark-900)"
+  lang={lang}
+  pageKey="weddings"
+  title={seo.weddings.title[lang]}
+  description={seo.weddings.description[lang]}
+  alternates={alternatesFor('weddings')}
+  schema={graph([breadcrumbSchema(crumbs)])}
+  mobileBar="wedding"
+>
+  <PageHero
+    lang={lang}
+    image={heroImg}
+    alt={L('Ceremonia de boda en el jardín del hotel entre montañas', 'Wedding ceremony in the hotel garden among the mountains', "Cérémonie de mariage dans le jardin de l'hôtel entre les montagnes")}
+    eyebrow={weddings.eyebrow[lang]}
+    title={weddings.title[lang]}
+    lead={weddings.lead[lang]}
+    crumbs={crumbs}
+  >
+    <a class="btn btn--light" href="#solicitar-informacion" data-track="wedding_enquiry_click" data-track-location="weddings_hero">{weddings.cta[lang]}</a>
+  </PageHero>
+
+  <section class="section spaces-wrap bg-alt" aria-labelledby="spaces-title">
+    <Botanical plant="haya" style="left:-8%;bottom:-10%" width="clamp(240px, 26vw, 440px)" rotate={-16} opacity={0.4} />
+    <div class="container">
+      <div class="spaces__head">
+        <SectionHeading eyebrow={weddings.eyebrow[lang]} title={weddings.spacesTitle[lang]} id="spaces-title" />
+        <p class="lead" data-reveal>{weddings.menus[lang]}</p>
+      </div>
+      <ol class="spaces" role="list">
+        {
+          weddings.spaces.map((s, i) => (
+            <li class="spaces__item" data-reveal style={`--reveal-delay:${i * 100}ms`}>
+              <Photo src={spaceImages[i]!} alt={s.name[lang]} ratio="3 / 4" sizes="(min-width: 900px) 30vw, 90vw" arch hover />
+              <h3 class="h3">{s.name[lang]}</h3>
+              <p class="spaces__text">{s.text[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tight" aria-label={t('nav.gallery')}>
+    <ul class="strip" role="list">
+      {
+        strip.map((s, i) => (
+          <li>
+            <a href={stripLarge[i]!.src} data-lightbox="bodas" aria-label={`${t('gallery.open')}: ${s.alt}`}>
+              <Photo src={s.src} alt={s.alt} ratio={i % 2 ? '3 / 4' : '4 / 3'} sizes="(min-width: 900px) 30vw, 70vw" hover />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section section--tight" id="empresas">
+    <div class="container business">
+      <Photo src={reuniones} alt={L('Sala de reuniones con proyector', 'Meeting room with projector', 'Salle de réunion avec projecteur')} ratio="16 / 10" sizes="(min-width: 1024px) 45vw, 100vw" />
+      <div class="business__text">
+        <SectionHeading eyebrow={L('Empresas y grupos', 'Business and groups', 'Entreprises et groupes')} title={aboutPage.meetingsTitle[lang]} />
+        <p class="body-text" data-reveal>{aboutPage.meetings[lang]}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section enquiry on-dark" id="solicitar-informacion" aria-labelledby="enquiry-title">
+    <Ridge above="var(--bg)" />
+    <Botanical plant="roble" dark style="left:-6%;bottom:-10%" width="clamp(240px, 28vw, 480px)" rotate={-10} />
+    <div class="container enquiry__grid">
+      <div class="enquiry__intro">
+        <SectionHeading eyebrow={weddings.menusTitle[lang]} title={weddings.formTitle[lang]} id="enquiry-title" />
+        <p class="body-text" data-reveal>{weddings.menusRequest[lang]}</p>
+        <p class="body-text" data-reveal>{weddings.formIntro[lang]}</p>
+        {
+          pdf && (
+            <a class="link-arrow" href={pdf} target="_blank" rel="noopener">
+              {weddings.menuPdfLabel[lang]}
+            </a>
+          )
+        }
+        <p class="enquiry__direct" data-reveal>
+          <a
+            href={`mailto:${hotel.salesEmail}?subject=${encodeURIComponent(weddings.emailSubject[lang])}`}
+            data-track="wedding_enquiry_click"
+            data-track-location="weddings_email">{hotel.salesEmail}</a
+          ><br />
+          <a href={`tel:${hotel.phone.tel}`} data-track-location="weddings">{hotel.phone.display}</a>
+        </p>
+      </div>
+      <div class="enquiry__form">
+        <EnquiryForm
+          lang={lang}
+          id="wedding-form"
+          to={hotel.salesEmail}
+          subject={weddings.emailSubject[lang]}
+          event="wedding_enquiry"
+          variant="event"
+          eventTypes={weddings.eventTypes[lang]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .spaces-wrap {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .spaces-wrap > .container {
+    position: relative;
+    color: var(--text);
+  }
+  .spaces__head {
+    display: grid;
+    gap: var(--space-m);
+    align-items: end;
+  }
+  @media (min-width: 1024px) {
+    .spaces__head {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+  .spaces {
+    display: grid;
+    gap: var(--space-xl) var(--space-m);
+    margin-top: var(--space-xl);
+  }
+  @media (min-width: 900px) {
+    .spaces {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .spaces__item:nth-child(2) {
+      margin-top: var(--space-xl);
+    }
+  }
+  .spaces__item {
+    display: grid;
+    gap: var(--space-xs);
+    align-content: start;
+  }
+  .spaces__item .h3 {
+    margin-top: var(--space-xs);
+  }
+  .spaces__text {
+    color: var(--text-soft);
+  }
+  .strip {
+    display: flex;
+    gap: var(--space-xs);
+    overflow-x: auto;
+    padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    align-items: center;
+  }
+  .strip li {
+    flex: 0 0 auto;
+    width: min(70vw, 440px);
+    scroll-snap-align: center;
+  }
+  .strip li:nth-child(even) {
+    width: min(52vw, 320px);
+  }
+  .strip a {
+    display: block;
+  }
+  .business {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .business__text {
+    display: grid;
+    gap: var(--space-m);
+  }
+  @media (min-width: 1024px) {
+    .business {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+  .enquiry {
+    overflow: hidden;
+    color: var(--gold-300);
+  }
+  .enquiry__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--text-on-dark);
+  }
+  .enquiry__intro {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+    justify-items: start;
+  }
+  .enquiry__direct {
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.3;
+  }
+  .enquiry__direct a {
+    text-decoration: none;
+  }
+  .enquiry__direct a:hover {
+    text-decoration: underline;
+  }
+  .enquiry__form {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    background: var(--cream);
+    border-radius: var(--radius-m);
+    color: var(--ink);
+    --text: var(--ink);
+    --text-soft: var(--ink-soft);
+  }
+  @media (min-width: 1024px) {
+    .enquiry__grid {
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

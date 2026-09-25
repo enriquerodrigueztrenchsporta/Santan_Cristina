@@ -1,0 +1,147 @@
+---
+import { integrations } from '../config/site';
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  id: string;
+  to: string;
+  subject: string;
+  /** Evento de analítica al enviar. */
+  event: string;
+  variant?: 'contact' | 'event';
+  eventTypes?: readonly string[];
+}
+
+const { lang, id, to, subject, event, variant = 'contact', eventTypes = [] } = Astro.props;
+const t = useT(lang);
+const f = (name: string) => `${id}-${name}`;
+---
+
+<form
+  id={id}
+  class="form"
+  method="post"
+  action={integrations.formEndpoint || `mailto:${to}?subject=${encodeURIComponent(subject)}`}
+  enctype={integrations.formEndpoint ? undefined : 'text/plain'}
+  data-enquiry
+  data-endpoint={integrations.formEndpoint || undefined}
+  data-to={to}
+  data-subject={subject}
+  data-event={event}
+  data-sent-msg={t('form.sent')}
+  data-sending-msg={t('form.sending')}
+  data-error-msg={t('form.error')}
+  data-mailto-msg={t('form.mailto')}
+>
+  <div class="form__grid">
+    <label class="form__field" for={f('name')}>
+      <span data-label>{t('form.name')}</span>
+      <input id={f('name')} name="name" type="text" autocomplete="name" required />
+    </label>
+    <label class="form__field" for={f('email')}>
+      <span data-label>{t('form.email')}</span>
+      <input id={f('email')} name="email" type="email" autocomplete="email" required />
+    </label>
+    <label class="form__field" for={f('phone')}>
+      <span><span data-label>{t('form.phone')}</span> <small>({t('form.optional')})</small></span>
+      <input id={f('phone')} name="phone" type="tel" autocomplete="tel" />
+    </label>
+    {
+      variant === 'event' && (
+        <>
+          <label class="form__field" for={f('type')}>
+            <span data-label>{t('form.eventType')}</span>
+            <select id={f('type')} name="event_type">
+              {eventTypes.map((type) => <option>{type}</option>)}
+            </select>
+          </label>
+          <label class="form__field" for={f('date')}>
+            <span><span data-label>{t('form.date')}</span> <small>({t('form.optional')})</small></span>
+            <input id={f('date')} name="date" type="date" />
+          </label>
+          <label class="form__field" for={f('guests')}>
+            <span><span data-label>{t('form.guests')}</span> <small>({t('form.optional')})</small></span>
+            <input id={f('guests')} name="guests" type="number" min="1" inputmode="numeric" />
+          </label>
+        </>
+      )
+    }
+    <label class="form__field form__field--full" for={f('message')}>
+      <span data-label>{t('form.message')}</span>
+      <textarea id={f('message')} name="message" rows="5" required></textarea>
+    </label>
+    <label class="form__trap" aria-hidden="true">
+      Website <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+  <p class="form__privacy">{t('form.privacy')}</p>
+  <button class="btn" type="submit">{t('form.send')}</button>
+  <p class="form__status" role="status" data-form-status hidden></p>
+</form>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .form__grid {
+    width: 100%;
+    display: grid;
+    gap: var(--space-s) var(--space-m);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .form__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .form__field {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--text);
+  }
+  .form__field small {
+    font-weight: 400;
+    color: var(--text-soft);
+  }
+  .form__field--full {
+    grid-column: 1 / -1;
+  }
+  .form input,
+  .form select,
+  .form textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--sand-400);
+    border-radius: var(--radius-s);
+    background: #fcf6ec;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .form textarea {
+    resize: vertical;
+  }
+  .form input:focus-visible,
+  .form select:focus-visible,
+  .form textarea:focus-visible {
+    outline-offset: 0;
+    border-color: var(--bark-700);
+  }
+  .form__trap {
+    position: absolute;
+    left: -9999px;
+  }
+  .form__privacy {
+    font-size: var(--step--2);
+    color: var(--text-soft);
+  }
+  .form__status {
+    font-weight: 600;
+  }
+</style>

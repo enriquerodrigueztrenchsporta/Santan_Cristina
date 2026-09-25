@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import SpaNotice from '../components/SpaNotice.astro';
+import { hotel } from '../config/site';
+import { spa } from '../content/spa';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { breadcrumbSchema, graph } from '../lib/schema';
+
+import heroImg from '../assets/img/spa/piscina-nieve.jpg';
+import piscina from '../assets/img/spa/piscina.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'spa');
+const mail = `mailto:${hotel.email}?subject=${encodeURIComponent(spa.emailSubject[lang])}`;
+---
+
+<BaseLayout
+  overlayHeader={false}
+  lang={lang}
+  pageKey="spa"
+  title={seo.spa.title[lang]}
+  description={seo.spa.description[lang]}
+  alternates={alternatesFor('spa')}
+  schema={graph([breadcrumbSchema(crumbs)])}
+>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={heroImg}
+    alt={L('Piscina cubierta del Petit Spa con el paisaje nevado tras los ventanales', 'Petit Spa indoor pool with the snowy landscape behind the windows', 'Piscine couverte du Petit Spa avec le paysage enneigé derrière les baies vitrées')}
+    eyebrow={spa.eyebrow[lang]}
+    title={spa.title[lang]}
+    crumbs={crumbs}
+    position="50% 40%"
+  >
+    <SpaNotice lang={lang} detail />
+  </PageHero>
+
+  <section class="section">
+    <div class="container spa">
+      <ul class="spa__facts" role="list">
+        {
+          spa.facts.map((f, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 90}ms`}>
+              <span class="spa__fact-value">{f.value}</span>
+              <span class="spa__fact-label">{f.label[lang]}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="spa__grid">
+        <div class="spa__text">
+          <SectionHeading eyebrow="Petit Spa" title={L('Qué incluye', 'What is included', 'Ce qui est inclus')} />
+          <ul class="spa__features" role="list" data-reveal>
+            {spa.features[lang].map((f) => <li>{f}</li>)}
+          </ul>
+        </div>
+        <div class="spa__photos">
+          <Photo src={piscina} alt={L('Piscina cubierta con ventanales al bosque', 'Indoor pool with windows onto the forest', 'Piscine couverte avec baies vitrées sur la forêt')} ratio="4 / 3" sizes="(min-width: 1024px) 50vw, 100vw" zoom />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-sand">
+    <div class="container spa-info">
+      <div>
+        <h2 class="h3">{spa.ratesTitle[lang]}</h2>
+        <dl class="rates">
+          {
+            spa.rates.map((r) => (
+              <div class="rates__row">
+                <dt>{r.label[lang]}</dt>
+                <dd>{r.price[lang]}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <div>
+        <h2 class="h3">{spa.rulesTitle[lang]}</h2>
+        <ul class="rules" role="list">
+          {spa.rules[lang].map((r) => <li>{r}</li>)}
+        </ul>
+        <div class="btn-row">
+          <a class="btn" href={`tel:${hotel.phone.tel}`} data-track-location="spa">{hotel.phone.display}</a>
+          <a class="btn btn--ghost" href={`https://wa.me/${hotel.whatsapp.number}`} target="_blank" rel="noopener" data-track-location="spa">WhatsApp</a>
+          <a class="link-arrow" href={mail} data-track-location="spa">{hotel.email}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container cross">
+      <a class="cross__item" href={pagePath('elBoj', lang)}>
+        <span class="eyebrow">{t('nav.elBojFull')}</span>
+        <span class="h3">{L('Cocina natural de temporada', 'Seasonal natural cuisine', 'Cuisine naturelle de saison')} →</span>
+      </a>
+      <a class="cross__item" href={pagePath('pyrenees', lang)}>
+        <span class="eyebrow">{t('nav.pyrenees')}</span>
+        <span class="h3">{L('Lugares para descubrir', 'Spots to discover', 'Endroits à découvrir')} →</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .spa {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .spa__facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+  }
+  .spa__facts li {
+    display: grid;
+    gap: 0.3rem;
+    padding-top: var(--space-m);
+  }
+  .spa__facts li + li {
+    padding-left: var(--space-m);
+    border-left: 1px solid var(--line);
+  }
+  .spa__fact-value {
+    font-family: var(--ff-display);
+    font-size: clamp(1.6rem, 1rem + 3vw, 4.1rem);
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .spa__fact-label {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .spa__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .spa__text {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+  .spa__features {
+    border-top: 1px solid var(--line);
+  }
+  .spa__features li {
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--ff-display);
+    font-size: var(--step-1);
+  }
+  .spa__photos {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  @media (min-width: 1024px) {
+    .spa__grid {
+      grid-template-columns: 1fr 1.3fr;
+      gap: var(--space-2xl);
+    }
+  }
+  .spa-info {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  @media (min-width: 1024px) {
+    .spa-info {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .spa-info__notice {
+    margin-block: var(--space-m);
+  }
+  .rates__row {
+    display: grid;
+    gap: 0.2rem;
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+  }
+  .rates dt {
+    font-weight: 600;
+  }
+  .rates dd {
+    color: var(--text-soft);
+  }
+  .rules {
+    margin-block: var(--space-m) var(--space-l);
+    display: grid;
+    gap: 0.6rem;
+  }
+  .rules li {
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .rules li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 0.6rem;
+    height: 1px;
+    background: var(--accent-text);
+  }
+  .spa-info__book {
+    margin-block: var(--space-l) var(--space-m);
+    color: var(--text-soft);
+  }
+  .cross {
+    display: grid;
+    gap: var(--space-s);
+  }
+  @media (min-width: 768px) {
+    .cross {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .cross__item {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-l);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition: background-color var(--dur-m) var(--ease-out);
+  }
+  .cross__item:hover {
+    background: var(--bg-alt);
+  }
+</style>

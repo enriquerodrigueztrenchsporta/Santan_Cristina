@@ -1,0 +1,138 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { gallery, galleryCategories, type GalleryCategory } from '../content/gallery';
+import { seo } from '../content/seo';
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { breadcrumbSchema, graph } from '../lib/schema';
+
+import heroImg from '../assets/img/hotel/hotel-bosque-otono.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const crumbs = crumbsFor(lang, 'gallery');
+const cats = Object.keys(galleryCategories) as GalleryCategory[];
+const large = await Promise.all(gallery.map((g) => getImage({ src: g.src, width: Math.min(g.src.width, 1600), format: 'webp' })));
+---
+
+<BaseLayout
+  footerAbove="var(--bg-alt)"
+  overlayHeader={false}
+  lang={lang}
+  pageKey="gallery"
+  title={seo.gallery.title[lang]}
+  description={seo.gallery.description[lang]}
+  alternates={alternatesFor('gallery')}
+  schema={graph([breadcrumbSchema(crumbs)])}
+>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={heroImg}
+    alt={{ es: 'Tejados del hotel entre el bosque en otoño', en: 'Hotel roofs among the forest in autumn', fr: "Toits de l'hôtel dans la forêt en automne" }[lang]}
+    eyebrow={t('nav.gallery')}
+    title={{ es: 'Santa Cristina en imágenes', en: 'Santa Cristina in pictures', fr: 'Santa Cristina en images' }[lang]}
+    crumbs={crumbs}
+  />
+
+  <nav class="gal-nav" aria-label={t('nav.gallery')}>
+    <ul role="list" class="container">
+      {
+        cats.map((c) => (
+          <li>
+            <a href={`#g-${c}`}>{galleryCategories[c][lang]}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  {
+    cats.map((c, ci) => (
+      <section class:list={['section section--tight', { 'bg-alt': ci % 2 === 1 }]} id={`g-${c}`} aria-labelledby={`g-${c}-title`}>
+        <div class="container">
+          <h2 class="h2 gal-title" id={`g-${c}-title`}>
+            {galleryCategories[c][lang]}
+          </h2>
+          <ul class="gal" role="list">
+            {gallery.map((g, i) =>
+              g.category === c ? (
+                <li>
+                  <a href={large[i]!.src} data-lightbox={c} aria-label={`${t('gallery.open')}: ${g.alt[lang]}`}>
+                    <Photo src={g.src} alt={g.alt[lang]} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" hover />
+                  </a>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .gal-nav {
+    position: sticky;
+    top: 64px;
+    z-index: 10;
+    background: rgb(248 240 227 / 0.96);
+    border-bottom: 1px solid var(--line);
+  }
+  .gal-nav ul {
+    display: flex;
+    gap: var(--space-m);
+    overflow-x: auto;
+    padding-block: 0.75rem;
+    list-style: none;
+    scrollbar-width: none;
+  }
+  .gal-nav a {
+    white-space: nowrap;
+    font-size: var(--step--1);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    text-decoration: none;
+  }
+  .gal-nav a:hover {
+    text-decoration: underline;
+  }
+  .gal-title {
+    margin-bottom: var(--space-l);
+  }
+  .gal {
+    columns: 1;
+    column-gap: var(--space-xs);
+  }
+  @media (min-width: 640px) {
+    .gal {
+      columns: 2;
+    }
+  }
+  @media (min-width: 1024px) {
+    .gal {
+      columns: 3;
+    }
+  }
+  .gal li {
+    break-inside: avoid;
+    margin-bottom: var(--space-xs);
+  }
+  .gal a {
+    display: block;
+  }
+  section[id^='g-'] {
+    scroll-margin-top: 110px;
+  }
+</style>

@@ -1,0 +1,286 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/en/",
+      "permanent": true
+    },
+    {
+      "source": "/about-us.html",
+      "destination": "/en/hotel/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms.html",
+      "destination": "/en/rooms/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms/double.html",
+      "destination": "/en/rooms/double/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms/superior-with-premium-views.html",
+      "destination": "/en/rooms/superior-premium-views/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms/double-with-extra-bed.html",
+      "destination": "/en/rooms/double-with-extra-bed/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms/mountain-retreat-for-4.html",
+      "destination": "/en/rooms/mountain-retreat-for-4/",
+      "permanent": true
+    },
+    {
+      "source": "/rooms/family.html",
+      "destination": "/en/rooms/family/",
+      "permanent": true
+    },
+    {
+      "source": "/el-boj-restaurant-terrace-Pyrenees-Canfranc-Candanchu.html",
+      "destination": "/en/el-boj-restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/el-boj-restaurant.html",
+      "destination": "/en/el-boj-restaurant/",
+      "permanent": true
+    },
+    {
+      "source": "/petit-spa.html",
+      "destination": "/en/petit-spa/",
+      "permanent": true
+    },
+    {
+      "source": "/wedding.html",
+      "destination": "/en/weddings-and-events/",
+      "permanent": true
+    },
+    {
+      "source": "/gallery.html",
+      "destination": "/en/gallery/",
+      "permanent": true
+    },
+    {
+      "source": "/attractions.html",
+      "destination": "/en/pyrenees/",
+      "permanent": true
+    },
+    {
+      "source": "/deals.html",
+      "destination": "/en/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/deals/hotel-tobazo.html",
+      "destination": "/en/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us.html",
+      "destination": "/en/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/es",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/es/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/es/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/es/hotel.html",
+      "destination": "/hotel/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms.html",
+      "destination": "/habitaciones/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms/doble.html",
+      "destination": "/habitaciones/doble/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms/superior-con-vistas-premium.html",
+      "destination": "/habitaciones/superior-vistas-premium/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms/doble-con-cama-supletoria.html",
+      "destination": "/habitaciones/doble-con-cama-supletoria/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms/refugio-montana-para-4.html",
+      "destination": "/habitaciones/refugio-montana-para-4/",
+      "permanent": true
+    },
+    {
+      "source": "/es/rooms/familiar.html",
+      "destination": "/habitaciones/familiar/",
+      "permanent": true
+    },
+    {
+      "source": "/es/el-boj-restaurante-terraza-canfranc-candanchu.html",
+      "destination": "/restaurante-el-boj/",
+      "permanent": true
+    },
+    {
+      "source": "/es/el-boj-restaurante.html",
+      "destination": "/restaurante-el-boj/",
+      "permanent": true
+    },
+    {
+      "source": "/es/petit-spa.html",
+      "destination": "/petit-spa/",
+      "permanent": true
+    },
+    {
+      "source": "/es/bodas.html",
+      "destination": "/bodas-y-eventos/",
+      "permanent": true
+    },
+    {
+      "source": "/es/fotos.html",
+      "destination": "/galeria/",
+      "permanent": true
+    },
+    {
+      "source": "/es/pirineo.html",
+      "destination": "/pirineos/",
+      "permanent": true
+    },
+    {
+      "source": "/es/hotel-tobazo.html",
+      "destination": "/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/es/hotel-tobazo/hotel-tobazo.html",
+      "destination": "/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/es/contacto.html",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/es/404.html",
+      "destination": "/404.html",
+      "permanent": true
+    },
+    {
+      "source": "/fr/index.html",
+      "destination": "/fr/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/about-us.html",
+      "destination": "/fr/hotel/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms.html",
+      "destination": "/fr/chambres/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms/double.html",
+      "destination": "/fr/chambres/double/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms/superieure-vues-premium.html",
+      "destination": "/fr/chambres/superieure-vues-premium/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms/double-avec-lit-d-appoint.html",
+      "destination": "/fr/chambres/double-avec-lit-d-appoint/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms/chambre-quadruple-avec-douche.html",
+      "destination": "/fr/chambres/chambre-quadruple-avec-douche/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rooms/familial.html",
+      "destination": "/fr/chambres/familial/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/el-boj-restaurant-terrasse-canfranc-candanchu.html",
+      "destination": "/fr/restaurant-el-boj/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/petit-spa.html",
+      "destination": "/fr/petit-spa/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/mariages.html",
+      "destination": "/fr/mariages-et-evenements/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/gallery.html",
+      "destination": "/fr/galerie/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/attractions.html",
+      "destination": "/fr/pyrenees/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/offres.html",
+      "destination": "/fr/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/offres/hotel-tobazo.html",
+      "destination": "/fr/hotel-tobazo/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/contact-us.html",
+      "destination": "/fr/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/404.html",
+      "destination": "/404.html",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/_astro/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

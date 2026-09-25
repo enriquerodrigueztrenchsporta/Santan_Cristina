@@ -1,0 +1,85 @@
+---
+import { googleRatings } from '../config/site';
+import type { Lang } from '../i18n/config';
+import { formatDate, formatNumber, useT } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  which: 'hotel' | 'restaurant';
+  title?: string;
+}
+const { lang, which, title } = Astro.props;
+const t = useT(lang);
+const r = googleRatings[which];
+const filled = Math.round(r.rating * 2) / 2;
+---
+
+{
+  r.show && (
+    <div class="rating">
+      {title && <p class="rating__title">{title}</p>}
+      <p class="rating__score">
+        <span class="rating__value">{formatNumber(r.rating, lang, 1)}</span>
+        <span class="rating__stars" aria-hidden="true" style={`--fill:${(filled / 5) * 100}%`}>
+          ★★★★★
+        </span>
+        <span class="sr-only">/ 5</span>
+        <span class="rating__src">{t('common.onGoogle')}</span>
+      </p>
+      <p class="rating__count">
+        {formatNumber(r.reviews, lang)} {t('common.reviews')}
+      </p>
+      <a class="link-arrow" href={r.url} target="_blank" rel="noopener">
+        {t('common.seeReviews')}
+        <span class="sr-only">{t('common.newTab')}</span>
+      </a>
+      <p class="rating__note">
+        {t('common.ratingSource')} {formatDate(r.checkedAt, lang)}.
+      </p>
+    </div>
+  )
+}
+
+<style>
+  .rating {
+    display: grid;
+    gap: 0.4rem;
+    justify-items: start;
+  }
+  .rating__title {
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+  .rating__score {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .rating__value {
+    font-family: var(--ff-display);
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+  .rating__stars {
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--amber-500) var(--fill), rgb(127 127 127 / 0.35) var(--fill));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .rating__src,
+  .rating__count {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .rating__note {
+    margin-top: 0.3rem;
+    font-size: var(--step--2);
+    color: var(--text-soft);
+    max-width: 36ch;
+  }
+</style>

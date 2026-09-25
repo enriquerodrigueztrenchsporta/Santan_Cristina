@@ -1,0 +1,40 @@
+{
+  "name": "hotel-santa-cristina",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web oficial del Hotel Santa Cristina Petit Spa y del Restaurante El Boj (Canfranc, Pirineo aragonés)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e",
+    "prebuild": "node scripts/generate-redirects.mjs",
+    "assets": "node scripts/generate-assets.mjs",
+    "screenshots": "node scripts/screenshots.mjs",
+    "serve": "node scripts/serve.mjs 4321"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/hanken-grotesk": "^5.3.0",
+    "astro": "^7.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "eslint": "^10.11.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

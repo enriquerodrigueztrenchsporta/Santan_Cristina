@@ -1,0 +1,268 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { hotel } from '../config/site';
+import { AMENITIES, rooms, type Room } from '../content/rooms';
+import { type Lang, roomPath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+import { crumbsFor, roomAlternates } from '../lib/page';
+import { abs, breadcrumbSchema, graph, roomSchema } from '../lib/schema';
+
+interface Props {
+  lang: Lang;
+  room: Room;
+}
+const { lang, room } = Astro.props;
+const t = useT(lang);
+const crumbs = crumbsFor(lang, 'rooms', room);
+const cover = room.images[0];
+const og = await getImage({ src: cover.src, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
+const schema = graph([roomSchema(room, lang, abs(og.src)), breadcrumbSchema(crumbs)]);
+const bookingUrl = buildBookingUrl({ lang });
+const large = await Promise.all(room.images.map((img) => getImage({ src: img.src, width: Math.min(img.src.width, 1600), format: 'webp' })));
+const others = rooms.filter((r) => r.id !== room.id);
+const title = `${room.name[lang]} · ${room.size} m² | ${lang === 'fr' ? 'Hôtel' : 'Hotel'} Santa Cristina, Canfranc`;
+const description = `${room.description[lang]} ${room.occupancy[lang].join(' · ')}.`;
+---
+
+<BaseLayout
+  footerAbove="var(--bg-sand)"
+  overlayHeader={false}
+  lang={lang}
+  pageKey="rooms"
+  title={title}
+  description={description}
+  alternates={roomAlternates(room)}
+  schema={schema}
+  ogImage={og.src}
+>
+  <div data-room-view={room.id} data-room-name={room.name.es} hidden></div>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={cover.src}
+    alt={cover.alt[lang]}
+    eyebrow={`${room.size} m² · ${t('room.upTo')} ${room.maxGuests} ${t('room.people')}`}
+    title={room.name[lang]}
+    lead={room.description[lang]}
+    crumbs={crumbs}
+  >
+    <a class="btn btn--book" href={bookingUrl} target="_blank" rel="noopener" data-booking-open data-track="booking_click" data-track-location={`room_hero_${room.id}`}
+      >{t('book.room')}</a
+    >
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container room">
+      <div class="room__main">
+        <h2 class="sr-only">{t('room.gallery')}</h2>
+        <ul class="room__gallery" role="list">
+          {
+            room.images.map((img, i) => (
+              <li class:list={{ 'is-wide': i === 0 && room.images.length % 2 === 1 }}>
+                <a href={large[i]!.src} data-lightbox={room.id} aria-label={`${t('gallery.open')}: ${img.alt[lang]}`}>
+                  <Photo src={img.src} alt={img.alt[lang]} ratio={i === 0 && room.images.length % 2 === 1 ? '16 / 10' : '4 / 3'} sizes="(min-width: 1024px) 40vw, 50vw" hover />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="room__details">
+          <dl class="room__facts">
+            <div>
+              <dt>{t('room.size')}</dt>
+              <dd>{room.size} m²</dd>
+            </div>
+            <div>
+              <dt>{t('room.occupancy')}</dt>
+              <dd>
+                <ul role="list">{room.occupancy[lang].map((o) => <li>{o}</li>)}</ul>
+              </dd>
+            </div>
+          </dl>
+          <h2 class="h3 room__amen-title">{t('room.amenities')}</h2>
+          <ul class="room__amenities" role="list">
+            {room.amenities.map((k) => <li>{AMENITIES[k][lang]}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <aside class="room__aside" aria-label={t('book.room')}>
+        <div class="book-card">
+          <p class="eyebrow">{hotel.name}</p>
+          <p class="book-card__name">{room.name[lang]}</p>
+          <p class="book-card__meta">{room.size} m² · {t('room.upTo')} {room.maxGuests} {t('room.people')}</p>
+          <a class="btn btn--book book-card__btn" href={bookingUrl} target="_blank" rel="noopener" data-booking-open data-track="booking_click" data-track-location={`room_card_${room.id}`}
+            >{t('book.room')}</a
+          >
+          <p class="book-card__claim">{t('book.direct')}</p>
+          <p class="book-card__note">{t('room.ratesNote')}</p>
+          <p class="book-card__help">
+            {t('book.help')}<br />
+            <a href={`tel:${hotel.phone.tel}`} data-track-location="room_card">{hotel.phone.display}</a> ·
+            <a href={`mailto:${hotel.email}`} data-track-location="room_card">{hotel.email}</a>
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--tight bg-sand">
+    <div class="container">
+      <h2 class="h3 others__title">{t('room.others')}</h2>
+      <ul class="others" role="list">
+        {
+          others.map((r) => (
+            <li>
+              <a class="others__item" href={roomPath(r.slug, lang)}>
+                <Photo src={r.images[0].src} alt="" ratio="4 / 3" sizes="(min-width: 1024px) 22vw, 45vw" hover />
+                <span class="others__name">{r.name[lang]}</span>
+                <span class="others__meta">
+                  {r.size} m² · {t('room.upTo')} {r.maxGuests} {t('room.people')}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .room {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+  @media (min-width: 1024px) {
+    .room {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+  .room__gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xs);
+  }
+  .room__gallery .is-wide {
+    grid-column: 1 / -1;
+  }
+  .room__gallery a {
+    display: block;
+  }
+  .room__details {
+    margin-top: var(--space-xl);
+  }
+  .room__facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-l);
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--line);
+  }
+  .room__facts dt {
+    font-size: var(--step--2);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--accent-text);
+  }
+  .room__facts dd {
+    margin-top: 0.4rem;
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+  .room__facts dd ul {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .room__amen-title {
+    margin-top: var(--space-l);
+  }
+  .room__amenities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-top: var(--space-s);
+    column-gap: var(--space-l);
+  }
+  .room__amenities li {
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step--1);
+  }
+  .room__aside {
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+  }
+  .book-card {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-l);
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+  }
+  .book-card__name {
+    font-family: var(--ff-display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+  }
+  .book-card__meta,
+  .book-card__note,
+  .book-card__help,
+  .book-card__claim {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .book-card__claim {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .book-card__btn {
+    margin-block: var(--space-xs);
+    width: 100%;
+  }
+  .book-card__help a {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .others__title {
+    margin-bottom: var(--space-l);
+  }
+  .others {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-m);
+  }
+  @media (min-width: 1024px) {
+    .others {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .others__item {
+    display: grid;
+    gap: 0.3rem;
+    text-decoration: none;
+  }
+  .others__name {
+    margin-top: 0.5rem;
+    font-family: var(--ff-display);
+    font-size: var(--step-1);
+    line-height: 1.15;
+  }
+  .others__meta {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+</style>

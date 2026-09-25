@@ -1,0 +1,45 @@
+---
+/**
+ * Logotipo tipográfico provisional.
+ * Sustituir por el logo vectorial oficial cuando el hotel lo facilite
+ * (el logo actual solo existe en JPG con fondo blanco).
+ */
+interface Props {
+  size?: 'm' | 'l';
+}
+const { size = 'm' } = Astro.props;
+---
+
+<span class:list={['wordmark', `wordmark--${size}`]}>
+  <span class="wordmark__name">Santa Cristina</span>
+  <span class="wordmark__sub">Hotel &amp; Petit Spa</span>
+</span>
+
+<style>
+  .wordmark {
+    display: inline-grid;
+    line-height: 1;
+    color: inherit;
+  }
+  .wordmark__name {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .wordmark__sub {
+    margin-top: 0.3rem;
+    font-family: var(--ff-sans);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .wordmark--l .wordmark__name {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+  }
+  .wordmark--l .wordmark__sub {
+    font-size: 0.72rem;
+  }
+</style>

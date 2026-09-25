@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Botanical from '../components/Botanical.astro';
+import { pagePath } from '../i18n/config';
+---
+
+<BaseLayout
+  footerAbove="var(--bark-900)"
+  lang="es"
+  pageKey="404"
+  title="Página no encontrada | Hotel Santa Cristina Petit Spa"
+  description="La página que buscas no existe o ha cambiado de dirección."
+  alternates={{ es: '/404/', en: '/404/', fr: '/404/' }}
+  noindex
+  overlayHeader={false}
+>
+  <section class="nf on-dark">
+    <Botanical plant="roble" dark style="right:-5%;top:10%" width="40vw" rotate={10} />
+    <div class="container nf__inner">
+      <p class="eyebrow">404</p>
+      <h1 class="h1">Esta senda no lleva a ninguna parte</h1>
+      <p class="lead">La página que buscas no existe o ha cambiado de dirección.</p>
+      <p lang="en">This page does not exist or has moved.</p>
+      <p lang="fr">Cette page n'existe pas ou a été déplacée.</p>
+      <div class="btn-row">
+        <a class="btn btn--light" href={pagePath('home', 'es')}>Volver al inicio</a>
+        <a class="btn btn--ghost" href={pagePath('home', 'en')} lang="en">Home</a>
+        <a class="btn btn--ghost" href={pagePath('home', 'fr')} lang="fr">Accueil</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    overflow: hidden;
+    min-height: 80svh;
+    display: flex;
+    align-items: center;
+    padding-block: calc(var(--header-h) + var(--space-2xl)) var(--space-2xl);
+    color: var(--gold-300);
+  }
+  .nf__inner {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+    color: var(--text-on-dark);
+  }
+</style>

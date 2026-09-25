@@ -1,0 +1,110 @@
+---
+import type { ImageMetadata } from 'astro';
+import Photo from './Photo.astro';
+import { videoSources } from '../lib/media';
+
+interface Props {
+  video: { webm?: string; mp4?: string; mobileMp4?: string };
+  poster: ImageMetadata;
+  /** Recorte vertical del poster para móvil. */
+  posterMobile?: ImageMetadata;
+  alt: string;
+  eager?: boolean;
+  position?: string;
+  pauseLabel: string;
+  parallax?: boolean;
+}
+
+const { video, poster, posterMobile, alt, eager = false, position = 'center', pauseLabel, parallax = false } = Astro.props;
+const sources = videoSources(video);
+---
+
+<div class="bgv" data-video-wrap>
+  <div class="bgv__layer" data-parallax={parallax ? '' : undefined}>
+    <Photo src={poster} mobileSrc={posterMobile} alt={alt} eager={eager} position={position} sizes="100vw" class="bgv__poster" />
+    {
+      sources.any && (
+        <video
+          class="bgv__video"
+          muted
+          loop
+          playsinline
+          autoplay
+          preload="none"
+          aria-hidden="true"
+          tabindex="-1"
+          data-bg-video
+          data-webm={sources.webm}
+          data-mp4={sources.mp4}
+          data-mobile-src={sources.mobile}
+        />
+      )
+    }
+  </div>
+  {
+    sources.any && (
+      <button class="bgv__toggle" type="button" aria-pressed="false" data-video-toggle>
+        <span class="sr-only">{pauseLabel}</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path class="i-pause" d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2" />
+          <path class="i-play" d="M8 5l11 7-11 7z" fill="currentColor" />
+        </svg>
+      </button>
+    )
+  }
+</div>
+
+<style>
+  .bgv,
+  .bgv__layer {
+    position: absolute;
+    inset: 0;
+  }
+  .bgv {
+    overflow: hidden;
+  }
+  .bgv__layer {
+    inset: -6% 0 -6%;
+    will-change: transform;
+  }
+  .bgv :global(.bgv__poster) {
+    position: absolute;
+    inset: 0;
+  }
+  .bgv__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-out);
+  }
+  .is-playing .bgv__video {
+    opacity: 1;
+  }
+  .bgv__toggle {
+    position: absolute;
+    right: var(--gutter);
+    bottom: var(--space-m);
+    z-index: 3;
+    display: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgb(248 240 227 / 0.5);
+    border-radius: 50%;
+    background: rgb(26 14 8 / 0.35);
+    color: var(--cream);
+  }
+  .is-playing .bgv__toggle {
+    display: grid;
+  }
+  .bgv__toggle .i-play,
+  .bgv__toggle[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+  .bgv__toggle[aria-pressed='true'] .i-play {
+    display: inline;
+  }
+</style>

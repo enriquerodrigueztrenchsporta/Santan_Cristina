@@ -1,0 +1,420 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import GoogleRating from '../components/GoogleRating.astro';
+import Botanical from '../components/Botanical.astro';
+import Ridge from '../components/Ridge.astro';
+import historica from '../assets/img/hotel/aduana-historica.jpg';
+import { hotel, restaurant } from '../config/site';
+import { elBoj } from '../content/restaurant';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { abs, breadcrumbSchema, graph, restaurantSchema } from '../lib/schema';
+
+import heroImg from '../assets/img/el-boj/comedor.jpg';
+import terraza from '../assets/img/hotel/terraza-verano.jpg';
+import terrazaChill from '../assets/img/el-boj/terraza-chill.jpg';
+import quesos from '../assets/img/el-boj/quesos.jpg';
+import reposteria from '../assets/img/el-boj/reposteria.jpg';
+import ventanal from '../assets/img/el-boj/mesas-ventanal.jpg';
+import banquete from '../assets/img/el-boj/salon-banquete.jpg';
+import comedor2 from '../assets/img/el-boj/comedor-2.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const crumbs = crumbsFor(lang, 'elBoj');
+const schema = graph([restaurantSchema(lang, abs('/og/el-boj.jpg')), breadcrumbSchema(crumbs)]);
+const wa = `https://wa.me/${hotel.whatsapp.number}?text=${encodeURIComponent(t('boj.whatsappMsg'))}`;
+const aboutLink = L('La historia del edificio', 'The history of the building', "L'histoire du bâtiment");
+const mail = `mailto:${hotel.email}?subject=${encodeURIComponent(t('boj.emailSubject'))}`;
+---
+
+<BaseLayout
+  footerAbove="var(--bg-sand)"
+  lang={lang}
+  pageKey="elBoj"
+  title={seo.elBoj.title[lang]}
+  description={seo.elBoj.description[lang]}
+  alternates={alternatesFor('elBoj')}
+  schema={schema}
+  ogImage="/og/el-boj.jpg"
+  mobileBar="table"
+>
+  <PageHero
+    lang={lang}
+    image={heroImg}
+    alt={L('Comedor de El Boj con techo de madera pintada y ventanales', 'El Boj dining room with painted wooden ceiling and large windows', "Salle d'El Boj au plafond de bois peint et grandes fenêtres")}
+    eyebrow={L('Restaurante El Boj · Canfranc-Estación', 'El Boj restaurant · Canfranc', 'Restaurant El Boj · Canfranc')}
+    title={elBoj.title[lang]}
+    lead={elBoj.subtitle[lang]}
+    crumbs={crumbs}
+  >
+    <a class="btn btn--book" href="#reservar-mesa" data-track="restaurant_booking_click" data-track-location="boj_hero">{t('boj.book')}</a>
+    <a class="btn btn--ghost is-light boj-ghost" href="#carta">{elBoj.servicesTitle[lang]}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container boj-intro">
+      <div class="boj-intro__text">
+        <p class="eyebrow" data-reveal>El Boj</p>
+        <p class="boj-intro__lead" data-reveal>{elBoj.lead[lang]}</p>
+      </div>
+      <aside class="boj-intro__rating" data-reveal>
+        <GoogleRating lang={lang} which="restaurant" title={elBoj.ratingTitle[lang]} />
+      </aside>
+    </div>
+  </section>
+
+  <section class="terrace" aria-labelledby="terrace-title">
+    <div class="terrace__media">
+      <Photo src={terraza} alt={L('Terraza panorámica sobre el valle en verano', 'Panoramic terrace above the valley in summer', 'Terrasse panoramique sur la vallée en été')} sizes="(min-width: 1024px) 60vw, 100vw" zoom />
+    </div>
+    <div class="terrace__text">
+      <SectionHeading eyebrow={L('Terraza panorámica', 'Panoramic terrace', 'Terrasse panoramique')} title={elBoj.terraceTitle[lang]} id="terrace-title" />
+      <p class="body-text" data-reveal>{elBoj.terrace[lang]}</p>
+      <Photo src={terrazaChill} alt={L('Rincón de terraza con sofás y vistas al valle', 'Terrace corner with sofas and valley views', 'Coin terrasse avec canapés et vue sur la vallée')} ratio="4 / 3" sizes="(min-width: 1024px) 28vw, 90vw" class="terrace__inset" />
+    </div>
+  </section>
+
+  <section class="section menu on-dark" id="carta" aria-labelledby="menu-title">
+    <Ridge above="var(--bg-sand)" />
+    <Botanical plant="boj" dark style="right:-3%;top:8%" width="clamp(220px, 24vw, 420px)" rotate={-6} />
+    <div class="container menu__inner">
+      <SectionHeading eyebrow="El Boj" title={elBoj.servicesTitle[lang]} id="menu-title" />
+      <ol class="menu__list" role="list">
+        {
+          elBoj.services.map((s, i) => (
+            <li class="menu__item" data-reveal style={`--reveal-delay:${i * 100}ms`}>
+              <p class="menu__hours tabular">{s.hours[lang]}</p>
+              <h3 class="menu__name">{s.name[lang]}</h3>
+              <p class="menu__text">{s.text[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="menu__kids" data-reveal>{elBoj.kids[lang]}</p>
+    </div>
+  </section>
+
+  <section class="section section--tight bg-alt" aria-label={L('Fotografías de El Boj', 'El Boj photographs', "Photographies d'El Boj")}>
+    <div class="container mosaic">
+      <Photo src={quesos} alt={L('Mesa de quesos', 'Cheese table', 'Table de fromages')} sizes="(min-width: 1024px) 20vw, 50vw" class="mo1" zoom />
+      <Photo src={ventanal} alt={L('Mesas junto al ventanal con vistas', 'Tables by the window with views', 'Tables près de la baie vitrée avec vue')} sizes="(min-width: 1024px) 32vw, 100vw" class="mo2" zoom />
+      <Photo src={reposteria} alt={L('Repostería', 'Pastries', 'Pâtisseries')} sizes="(min-width: 1024px) 20vw, 50vw" class="mo3" zoom />
+      <Photo src={comedor2} alt={L('Comedor de El Boj', 'El Boj dining room', "Salle d'El Boj")} sizes="(min-width: 1024px) 28vw, 50vw" class="mo4" zoom />
+    </div>
+  </section>
+
+  <section class="section section--tight building">
+    <div class="container building__grid" data-reveal>
+      <Photo src={historica} alt={L('Fotografía histórica del edificio nevado', 'Historic photograph of the building in the snow', 'Photographie historique du bâtiment sous la neige')} ratio="3 / 2" sizes="(min-width: 1024px) 30vw, 90vw" class="building__photo" />
+      <div class="building__text">
+        <p class="eyebrow">{L('La casa', 'The house', 'La maison')}</p>
+        <h2 class="h3">{elBoj.buildingTitle[lang]}</h2>
+        <p class="body-text">{elBoj.building[lang]}</p>
+        <a class="link-arrow" href={`${pagePath('hotel', lang)}#history-title`}>{aboutLink}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container celebrate">
+      <Photo src={banquete} alt={L('Salón de El Boj preparado para una celebración', 'El Boj room set for a celebration', "Salle d'El Boj dressée pour une célébration")} ratio="4 / 3" sizes="(min-width: 1024px) 50vw, 100vw" zoom />
+      <div class="celebrate__text">
+        <SectionHeading eyebrow={L('Grupos', 'Groups', 'Groupes')} title={elBoj.celebrationsTitle[lang]} />
+        <p class="body-text" data-reveal>{elBoj.celebrations[lang]}</p>
+        <div class="btn-row" data-reveal>
+          <a class="btn" href={`${pagePath('weddings', lang)}#solicitar-informacion`} data-track="wedding_enquiry_click" data-track-location="boj_celebrations"
+            >{t('cta.request')}</a
+          >
+          <a class="link-arrow" href={pagePath('weddings', lang)}>{t('nav.weddings')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reserve bg-sand" id="reservar-mesa" aria-labelledby="reserve-title">
+    <div class="container">
+      <SectionHeading eyebrow="El Boj" title={elBoj.bookTitle[lang]} lead={elBoj.bookText[lang]} id="reserve-title" />
+      <ul class="reserve__options" role="list">
+        <li data-reveal>
+          <a class="reserve__option" href={`tel:${hotel.phone.tel}`} data-track="restaurant_booking_click" data-track-location="boj_phone">
+            <span class="reserve__label">{t('contact.phone')}</span>
+            <span class="reserve__value">974 373 300</span>
+            <span class="reserve__action">{t('contact.call')} →</span>
+          </a>
+        </li>
+        <li data-reveal style="--reveal-delay:100ms">
+          <a class="reserve__option" href={wa} target="_blank" rel="noopener" data-track="restaurant_booking_click" data-track-location="boj_whatsapp">
+            <span class="reserve__label">WhatsApp</span>
+            <span class="reserve__value">686 285 283</span>
+            <span class="reserve__action">{t('contact.write')} →</span>
+          </a>
+        </li>
+        <li data-reveal style="--reveal-delay:200ms">
+          <a class="reserve__option" href={mail} data-track="restaurant_booking_click" data-track-location="boj_email">
+            <span class="reserve__label">{t('contact.email')}</span>
+            <span class="reserve__value reserve__value--mail">{hotel.email}</span>
+            <span class="reserve__action">{t('contact.write')} →</span>
+          </a>
+        </li>
+      </ul>
+      <div class="reserve__foot" data-reveal>
+        <p>
+          <strong>{restaurant.name}</strong> — {hotel.address.street}, {hotel.address.postalCode} {hotel.address.locality} ({hotel.address.region}).
+        </p>
+        <div class="btn-row">
+          <a class="link-arrow" href={restaurant.googleMaps.place} target="_blank" rel="noopener">{t('contact.openMaps')}</a>
+          <a class="link-arrow" href={pagePath('rooms', lang)}>{t('room.all')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .boj-ghost {
+    --btn-fg: var(--cream);
+  }
+  .boj-intro {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .boj-intro__text {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .boj-intro__lead {
+    font-family: var(--ff-display);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    max-width: 30ch;
+  }
+  .boj-intro__rating {
+    padding: var(--space-l);
+    background: var(--bg-alt);
+    align-self: start;
+  }
+  @media (min-width: 1024px) {
+    .boj-intro {
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-2xl);
+      align-items: end;
+    }
+  }
+
+  .terrace {
+    display: grid;
+    background: var(--bg-sand);
+  }
+  .terrace__media {
+    min-height: 60vh;
+    position: relative;
+  }
+  .terrace__media :global(.photo) {
+    position: absolute;
+    inset: 0;
+  }
+  .terrace__text {
+    display: grid;
+    gap: var(--space-m);
+    align-content: center;
+    padding: var(--space-2xl) var(--gutter);
+  }
+  .terrace__text :global(.terrace__inset) {
+    width: min(100%, 360px);
+    margin-top: var(--space-s);
+  }
+  @media (min-width: 1024px) {
+    .terrace {
+      grid-template-columns: 1.4fr 1fr;
+      min-height: 90svh;
+    }
+    .terrace__text {
+      padding: var(--space-2xl) var(--space-xl);
+    }
+  }
+
+  .menu {
+    overflow: hidden;
+    color: var(--gold-300);
+  }
+  .menu__inner {
+    position: relative;
+    color: var(--text-on-dark);
+  }
+  .menu__list {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--line-on-dark);
+  }
+  @media (min-width: 900px) {
+    .menu__list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .menu__item + .menu__item {
+      border-left: 1px solid var(--line-on-dark);
+      padding-left: var(--space-l);
+    }
+  }
+  .menu__item {
+    padding-top: var(--space-l);
+    padding-right: var(--space-l);
+  }
+  .menu__hours {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--gold-300);
+  }
+  .menu__name {
+    margin-top: 0.4rem;
+    font-family: var(--ff-display);
+    font-size: var(--step-3);
+    line-height: 1.05;
+  }
+  .menu__text {
+    margin-top: var(--space-s);
+    color: var(--text-on-dark-soft);
+    max-width: 36ch;
+  }
+  .menu__kids {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line-on-dark);
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: var(--step-1);
+  }
+
+  .mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+  .mosaic :global(.photo) {
+    height: clamp(200px, 26vw, 420px);
+  }
+  .mosaic :global(.mo2) {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 1024px) {
+    .mosaic {
+      grid-template-columns: 1fr 1.6fr 1fr 1.4fr;
+    }
+    .mosaic :global(.mo2) {
+      grid-column: auto;
+    }
+  }
+
+  .building__grid {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    padding: var(--space-l);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+  .building :global(.building__photo) {
+    filter: sepia(0.35);
+  }
+  .building__text {
+    display: grid;
+    gap: var(--space-s);
+    justify-items: start;
+  }
+  @media (min-width: 900px) {
+    .building__grid {
+      grid-template-columns: 0.8fr 1.4fr;
+      gap: var(--space-xl);
+    }
+  }
+  .celebrate {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .celebrate__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  @media (min-width: 1024px) {
+    .celebrate {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .reserve__options {
+    display: grid;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+  }
+  @media (min-width: 900px) {
+    .reserve__options {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .reserve__option {
+    display: grid;
+    gap: 0.5rem;
+    height: 100%;
+    padding: var(--space-l);
+    background: var(--cream);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    transition:
+      background-color var(--dur-m) var(--ease-out),
+      color var(--dur-m) var(--ease-out);
+  }
+  .reserve__option:hover {
+    background: var(--bark-900);
+    color: var(--cream);
+  }
+  .reserve__label {
+    font-size: var(--step--2);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    opacity: 0.8;
+  }
+  .reserve__value {
+    font-family: var(--ff-display);
+    font-size: var(--step-3);
+    line-height: 1.1;
+  }
+  .reserve__value--mail {
+    font-size: var(--step-2);
+    overflow-wrap: anywhere;
+  }
+  .reserve__action {
+    margin-top: var(--space-s);
+    font-size: var(--step--1);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+  }
+  .reserve__foot {
+    display: grid;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .reserve__foot strong {
+    color: var(--text);
+  }
+</style>

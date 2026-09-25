@@ -1,0 +1,59 @@
+---
+import type { Lang } from '../i18n/config';
+import { useT } from '../i18n/ui';
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+interface Props {
+  lang: Lang;
+  items: Crumb[];
+  light?: boolean;
+}
+const { lang, items, light = false } = Astro.props;
+const t = useT(lang);
+---
+
+<nav class:list={['crumbs', { 'crumbs--light': light }]} aria-label={t('nav.breadcrumb')}>
+  <ol role="list">
+    {
+      items.map((item, i) => (
+        <li>
+          {i < items.length - 1 ? <a href={item.path}>{item.name}</a> : <span aria-current="page">{item.name}</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs {
+    margin-bottom: var(--space-l);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 0.4rem;
+    opacity: 0.6;
+  }
+  .crumbs a {
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  .crumbs a:hover {
+    text-decoration: underline;
+    opacity: 1;
+  }
+  .crumbs--light {
+    color: rgb(248 240 227 / 0.92);
+  }
+</style>

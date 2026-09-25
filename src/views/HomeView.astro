@@ -1,0 +1,847 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BackgroundVideo from '../components/BackgroundVideo.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import GoogleRating from '../components/GoogleRating.astro';
+import MapBlock from '../components/MapBlock.astro';
+import SpaNotice from '../components/SpaNotice.astro';
+import Botanical from '../components/Botanical.astro';
+import Ridge from '../components/Ridge.astro';
+import { hotel, videos } from '../config/site';
+import {
+  heroCopy,
+  homeBoj,
+  homeIntro,
+  homeLocation,
+  homePyrenees,
+  homeRooms,
+  homeSpa,
+  homeWeddings,
+  locationFacts,
+} from '../content/hotel';
+import { elBoj } from '../content/restaurant';
+import { spa } from '../content/spa';
+import { weddings } from '../content/weddings';
+import { rooms } from '../content/rooms';
+import { places } from '../content/places';
+import { seo } from '../content/seo';
+import { type Lang, pagePath, roomPath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+import { alternatesFor } from '../lib/page';
+import { graph, hotelSchema, restaurantSchema, websiteSchema, abs } from '../lib/schema';
+
+import heroPoster from '../assets/img/hotel/hotel-valle-otono.jpg';
+import heroPosterMobile from '../assets/img/hotel/hotel-valle-otono-movil.jpg';
+import terraza from '../assets/img/hotel/terraza-verano.jpg';
+import historica from '../assets/img/hotel/aduana-historica.jpg';
+import comedor from '../assets/img/el-boj/comedor.jpg';
+import quesos from '../assets/img/el-boj/quesos.jpg';
+import piscina from '../assets/img/spa/piscina-nieve.jpg';
+import valle from '../assets/img/pirineos/valle-senderistas.jpg';
+import bodas from '../assets/img/bodas/terraza-invitados.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const L = <T,>(es: T, en: T, fr: T): T => ({ es, en, fr })[lang];
+const featured = rooms[0]!;
+const otherRooms = rooms.slice(1);
+const featuredPlaces = places.filter((p) => ['camino', 'anayet', 'estacion'].includes(p.id));
+const schema = graph([websiteSchema(), hotelSchema(lang, abs('/og/santa-cristina.jpg')), restaurantSchema(lang, abs('/og/el-boj.jpg'))]);
+const bookingUrl = buildBookingUrl({ lang });
+const a = hotel.address;
+const pauseLabel = L('Pausar o reanudar el vídeo', 'Pause or play the video', 'Mettre en pause ou lire la vidéo');
+---
+
+<BaseLayout
+  lang={lang}
+  pageKey="home"
+  title={seo.home.title[lang]}
+  description={seo.home.description[lang]}
+  alternates={alternatesFor('home')}
+  schema={schema}
+>
+  <!-- Portada -->
+  <section class="hero" aria-labelledby="hero-title">
+    <BackgroundVideo
+      video={videos.hero}
+      poster={heroPoster}
+      posterMobile={heroPosterMobile}
+      alt={L(
+        'El Hotel Santa Cristina en el valle, rodeado de bosque otoñal y montañas',
+        'Hotel Santa Cristina in the valley, surrounded by autumn forest and mountains',
+        "L'Hôtel Santa Cristina dans la vallée, entouré de forêt d'automne et de montagnes",
+      )}
+      eager
+      position="50% 60%"
+      pauseLabel={pauseLabel}
+      parallax
+    />
+    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="container hero__content">
+      <p class="eyebrow eyebrow--light">{heroCopy.eyebrow[lang]}</p>
+      <h1 class="display hero__title" id="hero-title">{heroCopy.title[lang]}</h1>
+      <p class="hero__subtitle">{heroCopy.subtitle[lang]}</p>
+      <div class="hero__actions">
+        <a
+          class="btn btn--book"
+          href={bookingUrl}
+          target="_blank"
+          rel="noopener"
+          data-booking-open
+          data-track="booking_click"
+          data-track-location="hero">{t('book.ctaLong')}</a
+        >
+        <a class="btn btn--ghost is-light hero__ghost" href="#hotel">{homeIntro.cta[lang]}</a>
+      </div>
+    </div>
+    <p class="hero__meta" aria-hidden="true">{heroCopy.location[lang]}</p>
+  </section>
+
+  <!-- El hotel -->
+  <section class="section intro" id="hotel" aria-labelledby="intro-title">
+    <Botanical plant="haya" style="right:-6%;top:34%" width="clamp(260px, 30vw, 540px)" rotate={22} />
+    <div class="container intro__grid">
+      <div class="intro__text">
+        <SectionHeading eyebrow={homeIntro.eyebrow[lang]} title={homeIntro.title[lang]} id="intro-title" />
+        <p class="lead" data-reveal>{homeIntro.lead[lang]}</p>
+        <p class="body-text intro__camino" data-reveal>{homeIntro.body[lang]}</p>
+        <a class="link-arrow" href={pagePath('hotel', lang)} data-reveal>{homeIntro.cta[lang]}</a>
+      </div>
+      <div class="intro__media">
+        <Photo
+          src={terraza}
+          alt={L('Terraza panorámica del hotel con el valle y la montaña al fondo', 'Panoramic terrace with the valley and mountains behind', 'Terrasse panoramique avec la vallée et la montagne')}
+          ratio="4 / 5"
+          sizes="(min-width: 1024px) 38vw, 86vw"
+          class="intro__main"
+          arch
+          zoom
+        />
+        <figure class="intro__inset" data-reveal style="--reveal-delay:200ms">
+          <Photo
+            src={historica}
+            alt={L('Fotografía histórica del edificio de la aduana nevado', 'Historic photograph of the customs building in the snow', 'Photographie historique de la douane sous la neige')}
+            ratio="3 / 2"
+            sizes="(min-width: 1024px) 22vw, 50vw"
+          />
+          <figcaption>{homeIntro.insetCaption[lang]}</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="container">
+      <ul class="facts" role="list">
+        {
+          locationFacts.map((f, i) => (
+            <li class="facts__item" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+              <span class="facts__value">{f.value[lang]}</span>
+              <span class="facts__label">{f.label[lang]}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Habitaciones -->
+  <section class="section rooms bg-sand" aria-labelledby="rooms-title">
+    <div class="container">
+      <div class="rooms__head">
+        <SectionHeading eyebrow={homeRooms.eyebrow[lang]} title={homeRooms.title[lang]} id="rooms-title" />
+        <p class="body-text rooms__lead" data-reveal>{homeRooms.lead[lang]}</p>
+      </div>
+      <div class="rooms__grid">
+        <a class="rooms__feature" href={roomPath(featured.slug, lang)} data-reveal>
+          <Photo src={featured.images[0].src} alt={featured.images[0].alt[lang]} ratio="5 / 4" sizes="(min-width: 1024px) 58vw, 100vw" hover />
+          <span class="rooms__feature-caption">
+            <span class="h3">{featured.name[lang]}</span>
+            <span class="rooms__meta">{featured.size} m² · {t('room.upTo')} {featured.maxGuests} {t('room.people')}</span>
+          </span>
+        </a>
+        <ol class="rooms__list" role="list">
+          {
+            otherRooms.map((room, i) => (
+              <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
+                <a class="rooms__row" href={roomPath(room.slug, lang)}>
+                  <Photo src={room.images[0].src} alt="" ratio="1 / 1" sizes="96px" class="rooms__thumb" />
+                  <span class="rooms__row-text">
+                    <span class="rooms__name">{room.name[lang]}</span>
+                    <span class="rooms__meta">
+                      {room.size} m² · {t('room.upTo')} {room.maxGuests} {t('room.people')}
+                    </span>
+                  </span>
+                  <span class="rooms__arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div class="btn-row rooms__actions" data-reveal>
+        <a class="btn" href={pagePath('rooms', lang)}>{t('room.all')}</a>
+        <a class="btn btn--book" href={bookingUrl} target="_blank" rel="noopener" data-booking-open data-track="booking_click" data-track-location="home_rooms"
+          >{t('book.cta')}</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- El Boj -->
+  <section class="boj on-dark" aria-labelledby="boj-title">
+    <Ridge above="var(--bg-sand)" />
+    <Botanical plant="boj" dark style="right:-4%;bottom:-10%" width="clamp(220px, 22vw, 400px)" rotate={8} />
+    <div class="container boj__grid">
+      <div class="boj__media">
+        <BackgroundVideo
+          video={videos.elBoj}
+          poster={comedor}
+          alt={L('Comedor del restaurante El Boj con techo de madera pintada', 'El Boj dining room with painted wooden ceiling', 'Salle du restaurant El Boj au plafond en bois peint')}
+          pauseLabel={pauseLabel}
+        />
+      </div>
+      <div class="boj__text">
+        <SectionHeading eyebrow={elBoj.eyebrow[lang]} title={homeBoj.title[lang]} id="boj-title" />
+        <p class="boj__sub" data-reveal>{homeBoj.text[lang]}</p>
+        <Photo
+          src={quesos}
+          alt={L('Mesa de quesos del restaurante', 'Cheese table at the restaurant', 'Table de fromages du restaurant')}
+          ratio="4 / 5"
+          sizes="(min-width: 1024px) 14vw, 36vw"
+          class="boj__inset"
+          arch
+        />
+        <div class="btn-row" data-reveal>
+          <a class="btn btn--book" href={`${pagePath('elBoj', lang)}#reservar-mesa`} data-track="restaurant_booking_click" data-track-location="home"
+            >{t('boj.book')}</a
+          >
+          <a class="btn btn--ghost" href={pagePath('elBoj', lang)}>{t('boj.discover')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Petit Spa -->
+  <section class="section spa-teaser bg-alt" aria-labelledby="spa-title">
+    <div class="container spa-teaser__grid">
+      <div class="spa-teaser__text">
+        <SectionHeading eyebrow={spa.eyebrow[lang]} title={homeSpa.title[lang]} id="spa-title" />
+        <div data-reveal><SpaNotice lang={lang} /></div>
+        <p class="body-text" data-reveal>{homeSpa.text[lang]}</p>
+        <a class="link-arrow" href={pagePath('spa', lang)} data-reveal>{spa.cta[lang]}</a>
+      </div>
+      <Photo
+        src={piscina}
+        alt={L('Piscina cubierta del Petit Spa con el paisaje nevado tras los ventanales', 'Petit Spa indoor pool with the snowy landscape behind the windows', 'Piscine couverte du Petit Spa avec le paysage enneigé derrière les baies vitrées')}
+        ratio="3 / 4"
+        sizes="(min-width: 1024px) 30vw, 80vw"
+        class="spa-teaser__img"
+        position="50% 35%"
+        arch
+        zoom
+      />
+    </div>
+  </section>
+
+  <!-- Los Pirineos -->
+  <section class="pyr" aria-labelledby="pyr-title">
+    <div class="pyr__banner on-dark">
+      <div class="pyr__banner-media" data-parallax>
+        <Photo
+          src={valle}
+          alt={L('Madre e hija caminando por un prado de alta montaña en los Pirineos', 'Mother and daughter walking across a high mountain meadow in the Pyrenees', 'Mère et fille marchant dans une prairie de haute montagne des Pyrénées')}
+          sizes="100vw"
+          position="50% 55%"
+        />
+      </div>
+      <div class="pyr__shade" aria-hidden="true"></div>
+      <div class="container pyr__banner-text">
+        <SectionHeading eyebrow={homePyrenees.eyebrow[lang]} title={homePyrenees.title[lang]} id="pyr-title" />
+        <p class="pyr__lead" data-reveal>{homePyrenees.lead[lang]}</p>
+        <ul class="leaf-list pyr__tags" role="list" data-reveal>
+          {homePyrenees.activities[lang].map((act) => <li>{act}</li>)}
+        </ul>
+      </div>
+    </div>
+    <div class="section section--tight bg-alt">
+      <Botanical plant="roble" style="left:-8%;bottom:-18%" width="clamp(220px, 24vw, 420px)" rotate={-18} opacity={0.4} />
+      <div class="container">
+        <ul class="pyr__places" role="list">
+          {
+            featuredPlaces.map((p, i) => (
+              <li data-reveal style={`--reveal-delay:${i * 100}ms`}>
+                <a href={`${pagePath('pyrenees', lang)}#${p.id}`} class="pyr__place">
+                  <Photo src={p.image} alt={p.alt[lang]} ratio="4 / 3" sizes="(min-width: 768px) 30vw, 90vw" hover />
+                  <span class="pyr__place-tag">{p.tag[lang]}</span>
+                  <span class="pyr__place-name">{p.name[lang]}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="pyr__more" data-reveal>
+          <a class="link-arrow" href={pagePath('pyrenees', lang)}>{homePyrenees.cta[lang]}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bodas y eventos -->
+  <section class="wed on-dark" aria-labelledby="wed-title">
+    <div class="wed__media">
+      <Photo
+        src={bodas}
+        alt={L('Invitados de una boda en la terraza del hotel con el valle y las montañas al fondo', 'Wedding guests on the hotel terrace with the valley and mountains behind', "Invités d'un mariage sur la terrasse de l'hôtel face à la vallée et aux montagnes")}
+        sizes="100vw"
+        zoom
+      />
+    </div>
+    <div class="wed__shade" aria-hidden="true"></div>
+    <div class="container wed__content">
+      <SectionHeading eyebrow={weddings.eyebrow[lang]} title={weddings.shortTitle[lang]} id="wed-title" />
+      <p class="wed__lead" data-reveal>{homeWeddings.text[lang]}</p>
+      <div class="btn-row" data-reveal>
+        <a class="btn btn--light" href={`${pagePath('weddings', lang)}#solicitar-informacion`} data-track="wedding_enquiry_click" data-track-location="home"
+          >{weddings.cta[lang]}</a
+        >
+        <a class="btn btn--ghost" href={pagePath('weddings', lang)}>{weddings.eyebrow[lang]}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo llegar -->
+  <section class="section loc" aria-labelledby="loc-title">
+    <Botanical plant="abeto" style="left:-7%;bottom:-8%" width="clamp(200px, 20vw, 360px)" rotate={14} opacity={0.4} />
+    <div class="container loc__grid">
+      <div class="loc__text">
+        <SectionHeading eyebrow={homeLocation.eyebrow[lang]} title={homeLocation.title[lang]} id="loc-title" />
+        <address class="loc__address" data-reveal>
+          <strong>{hotel.name}</strong><br />
+          {a.street}<br />
+          {a.postalCode} {a.locality}, {a.region}
+        </address>
+        <ul class="loc__contact" role="list" data-reveal>
+          <li><span>{t('contact.phone')}</span><a href={`tel:${hotel.phone.tel}`} data-track-location="home_location">{hotel.phone.display}</a></li>
+          <li>
+            <span>{t('contact.whatsapp')}</span><a href={`https://wa.me/${hotel.whatsapp.number}`} target="_blank" rel="noopener" data-track-location="home_location"
+              >{hotel.mobile.display}</a
+            >
+          </li>
+          <li><span>{t('contact.email')}</span><a href={`mailto:${hotel.email}`} data-track-location="home_location">{hotel.email}</a></li>
+        </ul>
+        <div class="btn-row" data-reveal>
+          <a class="btn" href={hotel.googleMaps.directions} target="_blank" rel="noopener" data-track-location="home_location">{t('contact.directions')}</a>
+        </div>
+        <div class="loc__rating" data-reveal>
+          <GoogleRating lang={lang} which="hotel" />
+        </div>
+      </div>
+      <div data-reveal>
+        <MapBlock lang={lang} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Portada */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(620px, 100svh);
+    padding-bottom: clamp(5rem, 11vh, 8rem);
+    color: var(--cream);
+    background: var(--bark-900);
+    overflow: hidden;
+  }
+  .hero :global(.photo) {
+    border-radius: 0;
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, rgb(26 14 8 / 0.75) 0%, rgb(26 14 8 / 0.28) 42%, rgb(26 14 8 / 0) 65%),
+      rgb(60 28 10 / 0.12);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 2;
+  }
+  .hero__title {
+    margin-top: var(--space-xs);
+    max-width: 11ch;
+    text-shadow: 0 2px 40px rgb(0 0 0 / 0.25);
+  }
+  .hero__subtitle {
+    margin-top: var(--space-s);
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-optical-sizing: auto;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    color: rgb(248 240 227 / 0.95);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-l);
+  }
+  .hero__ghost {
+    --btn-fg: var(--cream);
+  }
+  .hero__meta {
+    position: absolute;
+    z-index: 2;
+    right: var(--gutter);
+    bottom: clamp(5rem, 11vh, 8rem);
+    display: none;
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: var(--step--1);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    color: rgb(248 240 227 / 0.9);
+  }
+  @media (min-width: 900px) {
+    .hero__meta {
+      display: block;
+    }
+  }
+  @media (max-width: 767.98px) {
+    .hero {
+      min-height: max(560px, calc(100svh - 64px));
+      padding-bottom: var(--space-xl);
+    }
+  }
+
+  /* El hotel */
+  .intro {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .intro__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--text);
+  }
+  .intro__text {
+    display: grid;
+    gap: var(--space-m);
+    align-content: center;
+    justify-items: start;
+  }
+  .intro__camino {
+    padding-left: var(--space-s);
+    border-left: 2px solid var(--accent);
+  }
+  .intro__media {
+    position: relative;
+    padding-bottom: var(--space-xl);
+  }
+  .intro__media :global(.intro__main) {
+    width: 78%;
+    margin-left: auto;
+  }
+  .intro__inset {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 46%;
+    padding: 0.55rem;
+    background: var(--bg);
+    border-radius: var(--radius-m);
+    transform: rotate(-2.5deg);
+    box-shadow: 0 18px 40px rgb(42 28 20 / 0.12);
+  }
+  .intro__inset figcaption {
+    padding-top: 0.45rem;
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  @media (min-width: 1024px) {
+    .intro__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+  .facts {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-l) var(--space-m);
+    margin-top: var(--space-2xl);
+    color: var(--text);
+  }
+  .facts__item {
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+  }
+  .facts__value {
+    font-family: var(--ff-display);
+    font-optical-sizing: auto;
+    font-weight: 340;
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--copper-700);
+  }
+  .facts__label {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+    max-width: 24ch;
+  }
+  @media (min-width: 900px) {
+    .facts {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Habitaciones */
+  .rooms__head {
+    display: grid;
+    gap: var(--space-m);
+    align-items: end;
+    margin-bottom: var(--space-xl);
+  }
+  @media (min-width: 1024px) {
+    .rooms__head {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+  .rooms__grid {
+    display: grid;
+    gap: var(--space-l);
+  }
+  @media (min-width: 1024px) {
+    .rooms__grid {
+      grid-template-columns: 1.45fr 1fr;
+      align-items: stretch;
+    }
+  }
+  .rooms__feature {
+    position: relative;
+    display: block;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .rooms__feature :global(.photo) {
+    height: 100%;
+    border-radius: var(--radius-m);
+  }
+  .rooms__feature-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    gap: 0.3rem;
+    padding: var(--space-xl) var(--space-m) var(--space-m);
+    border-radius: 0 0 var(--radius-m) var(--radius-m);
+    background: linear-gradient(0deg, rgb(26 14 8 / 0.72), rgb(26 14 8 / 0));
+  }
+  .rooms__feature .rooms__meta {
+    color: rgb(248 240 227 / 0.9);
+  }
+  .rooms__list {
+    display: grid;
+    align-content: center;
+  }
+  .rooms__row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: var(--space-s);
+    align-items: center;
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+  }
+  .rooms__row :global(.rooms__thumb) {
+    width: 72px;
+    border-radius: 50%;
+  }
+  .rooms__row-text {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .rooms__name {
+    font-family: var(--ff-display);
+    font-optical-sizing: auto;
+    font-size: var(--step-2);
+    line-height: 1.1;
+  }
+  .rooms__meta {
+    font-size: var(--step--1);
+    color: var(--text-soft);
+  }
+  .rooms__arrow {
+    font-size: 1.3rem;
+    color: var(--copper-700);
+    transition: transform var(--dur-m) var(--ease-out);
+  }
+  .rooms__row:hover .rooms__arrow {
+    transform: translateX(6px);
+  }
+  .rooms__row:hover .rooms__name {
+    font-style: italic;
+  }
+  .rooms__actions {
+    margin-top: var(--space-xl);
+  }
+
+  /* El Boj */
+  .boj {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-3xl);
+    color: var(--gold-300);
+  }
+  .boj__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--text-on-dark);
+  }
+  .boj__media {
+    position: relative;
+    min-height: 60vh;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+  .boj__media :global(.photo) {
+    border-radius: 0;
+  }
+  .boj__text {
+    position: relative;
+    display: grid;
+    gap: var(--space-l);
+    align-content: center;
+    justify-items: start;
+  }
+  .boj__sub {
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-optical-sizing: auto;
+    font-size: var(--step-2);
+    line-height: 1.25;
+    color: var(--text-on-dark-soft);
+    max-width: 26ch;
+  }
+  .boj__text :global(.boj__inset) {
+    width: min(42%, 200px);
+  }
+  @media (min-width: 1024px) {
+    .boj__grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-2xl);
+    }
+    .boj__media {
+      min-height: 78vh;
+    }
+  }
+
+  /* Petit Spa */
+  .spa-teaser__grid {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .spa-teaser__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .spa-teaser__grid :global(.spa-teaser__img) {
+    width: min(100%, 420px);
+    justify-self: center;
+  }
+  @media (min-width: 1024px) {
+    .spa-teaser__grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-2xl);
+    }
+  }
+
+  /* Los Pirineos */
+  .pyr__banner {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 88svh;
+    padding-block: var(--space-2xl);
+    overflow: hidden;
+    background: var(--bark-900);
+  }
+  .pyr__banner-media {
+    position: absolute;
+    inset: -6% 0;
+  }
+  .pyr__banner-media :global(.photo) {
+    height: 100%;
+    border-radius: 0;
+  }
+  .pyr__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgb(26 14 8 / 0.72), rgb(26 14 8 / 0.05) 60%);
+  }
+  .pyr__banner-text {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+  }
+  .pyr__lead {
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    max-width: 30ch;
+  }
+  .pyr__tags {
+    --accent: var(--gold-300);
+    color: var(--text-on-dark);
+  }
+  .pyr > .section {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .pyr__places {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    color: var(--text);
+  }
+  @media (min-width: 768px) {
+    .pyr__places {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .pyr__places li:nth-child(2) {
+      margin-top: var(--space-xl);
+    }
+  }
+  .pyr__place {
+    display: grid;
+    gap: 0.35rem;
+    text-decoration: none;
+  }
+  .pyr__place-tag {
+    margin-top: 0.6rem;
+    font-family: var(--ff-display);
+    font-style: italic;
+    font-size: var(--step--1);
+    color: var(--accent-text);
+  }
+  .pyr__place-name {
+    font-family: var(--ff-display);
+    font-optical-sizing: auto;
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+  .pyr__more {
+    position: relative;
+    margin-top: var(--space-xl);
+    text-align: center;
+    color: var(--text);
+  }
+
+  /* Bodas */
+  .wed {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 92svh;
+    padding-block: var(--space-2xl);
+    overflow: hidden;
+  }
+  .wed__media {
+    position: absolute;
+    inset: 0;
+  }
+  .wed__media :global(.photo) {
+    height: 100%;
+    border-radius: 0;
+  }
+  .wed__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgb(26 14 8 / 0.84) 0%, rgb(26 14 8 / 0.35) 45%, rgb(26 14 8 / 0.05) 75%);
+  }
+  .wed__content {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .wed__lead {
+    max-width: 46ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  /* Cómo llegar */
+  .loc {
+    overflow: hidden;
+    color: var(--copper-500);
+  }
+  .loc__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: center;
+    color: var(--text);
+  }
+  .loc__text {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  @media (min-width: 1024px) {
+    .loc__grid {
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--space-2xl);
+    }
+  }
+  .loc__address {
+    font-style: normal;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .loc__contact {
+    display: grid;
+    width: 100%;
+    max-width: 30rem;
+  }
+  .loc__contact li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--step--1);
+  }
+  .loc__contact span {
+    font-family: var(--ff-display);
+    font-style: italic;
+    color: var(--text-soft);
+  }
+  .loc__contact a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .loc__contact a:hover {
+    text-decoration: underline;
+  }
+  .loc__rating {
+    margin-top: var(--space-s);
+    width: 100%;
+  }
+</style>

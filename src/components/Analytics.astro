@@ -1,0 +1,63 @@
+---
+/**
+ * Preparación para Google Tag Manager / Google Analytics 4.
+ * No se carga nada hasta definir PUBLIC_GTM_ID o PUBLIC_GA4_ID (ver .env.example).
+ *
+ * Consent Mode v2: todo se declara "denied" por defecto. Hay que instalar
+ * una plataforma de consentimiento (CMP) que actualice el estado cuando el
+ * usuario acepte. Ver README.md → Analítica.
+ */
+import { integrations } from '../config/site';
+
+const { gtmId, ga4Id } = integrations;
+const validGtm = /^GTM-[A-Z0-9]+$/.test(gtmId);
+const validGa4 = !validGtm && /^G-[A-Z0-9]+$/.test(ga4Id);
+---
+
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+</script>
+{
+  (validGtm || validGa4) && (
+    <script is:inline>
+      function gtag() {
+        // gtag.js exige el objeto `arguments`, no un array.
+        // eslint-disable-next-line prefer-rest-params
+        dataLayer.push(arguments);
+      }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500,
+      });
+    </script>
+  )
+}
+{
+  validGtm && (
+    <script is:inline define:vars={{ gtmId }}>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        const f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', gtmId);
+    </script>
+  )
+}
+{validGa4 && <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />}
+{
+  validGa4 && (
+    <script is:inline define:vars={{ ga4Id }}>
+      gtag('js', new Date());
+      gtag('config', ga4Id);
+      window.__ga4Direct = true;
+    </script>
+  )
+}

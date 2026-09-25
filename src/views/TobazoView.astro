@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { tobazo } from '../content/hotel';
+import { seo } from '../content/seo';
+import { type Lang, pagePath } from '../i18n/config';
+import { useT } from '../i18n/ui';
+import { alternatesFor, crumbsFor } from '../lib/page';
+import { breadcrumbSchema, graph } from '../lib/schema';
+
+import heroImg from '../assets/img/pirineos/hotel-tobazo.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const crumbs = crumbsFor(lang, 'tobazo');
+---
+
+<BaseLayout
+  footerAbove="var(--bg-alt)"
+  overlayHeader={false}
+  lang={lang}
+  pageKey="tobazo"
+  title={seo.tobazo.title[lang]}
+  description={seo.tobazo.description[lang]}
+  alternates={alternatesFor('tobazo')}
+  schema={graph([breadcrumbSchema(crumbs)])}
+>
+  <PageHero
+    lang={lang}
+    size="arch"
+    image={heroImg}
+    alt={{ es: 'Hotel Tobazo junto a las pistas nevadas de Candanchú', en: 'Hotel Tobazo next to the snowy slopes of Candanchú', fr: 'Hôtel Tobazo au pied des pistes enneigées de Candanchú' }[lang]}
+    eyebrow="Candanchú"
+    title={tobazo.title[lang]}
+    lead={tobazo.text[lang]}
+    crumbs={crumbs}
+  >
+    <a class="btn btn--light" href={tobazo.url} target="_blank" rel="noopener">{tobazo.cta[lang]}</a>
+    <a class="btn btn--ghost is-light tz-ghost" href={pagePath('pyrenees', lang)}>{t('nav.pyrenees')}</a>
+  </PageHero>
+</BaseLayout>
+
+<style>
+  .tz-ghost {
+    --btn-fg: var(--cream);
+  }
+</style>

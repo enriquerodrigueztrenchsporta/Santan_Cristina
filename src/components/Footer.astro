@@ -1,0 +1,210 @@
+---
+import { hotel } from '../config/site';
+import { partners } from '../content/hotel';
+import { type Lang, type PageKey, pagePath } from '../i18n/config';
+import { useT, type UiKey } from '../i18n/ui';
+import { buildBookingUrl } from '../lib/booking';
+import Botanical from './Botanical.astro';
+import Ridge from './Ridge.astro';
+import Wordmark from './Wordmark.astro';
+
+interface Props {
+  lang: Lang;
+  /** Color de la última sección de la página (para el perfil de montaña). */
+  above?: string;
+}
+const { lang, above = 'var(--bg)' } = Astro.props;
+const t = useT(lang);
+const year = new Date().getFullYear();
+
+const explore: { key: PageKey; label: UiKey }[] = [
+  { key: 'hotel', label: 'nav.hotel' },
+  { key: 'rooms', label: 'nav.rooms' },
+  { key: 'elBoj', label: 'nav.elBojFull' },
+  { key: 'spa', label: 'nav.spa' },
+  { key: 'weddings', label: 'nav.weddings' },
+  { key: 'pyrenees', label: 'nav.pyrenees' },
+  { key: 'gallery', label: 'nav.gallery' },
+  { key: 'contact', label: 'nav.contact' },
+  { key: 'tobazo', label: 'nav.tobazo' },
+];
+const a = hotel.address;
+---
+
+<footer class="footer on-dark">
+  <Ridge above={above} variant={2} />
+  <Botanical plant="roble" dark style="right:-4%;top:6%" width="clamp(240px, 26vw, 460px)" rotate={12} />
+  <Botanical plant="abeto" dark style="left:-5%;bottom:-8%" width="clamp(200px, 20vw, 360px)" rotate={-18} opacity={0.14} />
+  <div class="container footer__inner">
+    <div class="footer__cta">
+      <p class="footer__cta-title">{t('footer.bookDirect')}</p>
+      <div class="btn-row">
+        <a
+          class="btn btn--book"
+          href={buildBookingUrl({ lang })}
+          target="_blank"
+          rel="noopener"
+          data-booking-open
+          data-track="booking_click"
+          data-track-location="footer">{t('book.ctaLong')}</a
+        >
+        <a class="btn btn--ghost" href={pagePath('elBoj', lang) + '#reservar-mesa'} data-track="restaurant_booking_click" data-track-location="footer"
+          >{t('boj.book')}</a
+        >
+      </div>
+    </div>
+
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <Wordmark size="l" />
+        <p class="footer__stars" aria-label={t('common.stars')}><span aria-hidden="true">★★★</span> {t('common.stars')}</p>
+        <p class="footer__camino">{t('footer.camino')}</p>
+      </div>
+
+      <address class="footer__col">
+        <h2 class="footer__title">{t('footer.contact')}</h2>
+        <p>
+          {a.street}<br />{a.postalCode} {a.locality}<br />{a.region}, {a.countryName[lang]}
+        </p>
+        <p>
+          <a href={`tel:${hotel.phone.tel}`} data-track-location="footer">{hotel.phone.display}</a><br />
+          <a href={`https://wa.me/${hotel.whatsapp.number}`} target="_blank" rel="noopener" data-track-location="footer"
+            >WhatsApp {hotel.mobile.display}</a
+          ><br />
+          <a href={`mailto:${hotel.email}`} data-track-location="footer">{hotel.email}</a>
+        </p>
+        <a class="link-arrow" href={hotel.googleMaps.directions} target="_blank" rel="noopener">{t('contact.directions')}</a>
+      </address>
+
+      <nav class="footer__col" aria-labelledby="footer-explore">
+        <h2 class="footer__title" id="footer-explore">{t('footer.explore')}</h2>
+        <ul role="list" class="footer__links">
+          {explore.map((item) => <li><a href={pagePath(item.key, lang)}>{t(item.label)}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="footer__title">{t('common.follow')}</h2>
+        <ul role="list" class="footer__links">
+          <li><a href={hotel.social.instagram} target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href={hotel.social.facebook} target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href={hotel.social.tripadvisor} target="_blank" rel="noopener">Tripadvisor</a></li>
+        </ul>
+        <h2 class="footer__title footer__title--spaced">{t('footer.partners')}</h2>
+        <ul role="list" class="footer__links">
+          {partners.map((p) => <li><a href={p.url} target="_blank" rel="noopener">{p.name}</a></li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© {year} {hotel.name}. {t('footer.rights')}</p>
+      <p class="footer__credits">{t('footer.credits')}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--space-2xl) + 40px) var(--space-l);
+    background: var(--bark-950);
+  }
+  .footer__inner {
+    position: relative;
+  }
+  .footer__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--line);
+  }
+  .footer__cta-title {
+    font-family: var(--ff-display);
+    font-size: var(--step-3);
+    line-height: 1.05;
+    max-width: 16ch;
+  }
+  .footer__grid {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+    padding-block: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .footer__grid {
+      grid-template-columns: 1.3fr 1fr 1fr 0.9fr;
+    }
+  }
+  .footer__stars {
+    margin-top: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--text-on-dark-soft);
+  }
+  .footer__stars span {
+    color: var(--gold-300);
+    letter-spacing: 0.2em;
+  }
+  .footer__camino {
+    margin-top: var(--space-2xs);
+    font-family: var(--ff-display);
+    font-style: italic;
+    color: var(--gold-300);
+  }
+  .footer__col {
+    font-style: normal;
+    font-size: var(--step--1);
+    color: var(--text-on-dark-soft);
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+  }
+  .footer__col a {
+    color: var(--text-on-dark);
+    text-decoration: none;
+  }
+  .footer__col a:hover {
+    text-decoration: underline;
+  }
+  .footer__col .link-arrow {
+    justify-self: start;
+  }
+  .footer__title {
+    font-size: var(--step--2);
+    font-weight: 600;
+    font-family: var(--ff-display);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--gold-300);
+  }
+  .footer__title--spaced {
+    margin-top: var(--space-s);
+  }
+  .footer__links {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .footer__links a {
+    display: inline-block;
+    padding-block: 0.15rem;
+  }
+  .footer__credits {
+    margin-top: 0.3rem;
+    opacity: 0.75;
+  }
+  .footer__bottom {
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--2);
+    color: var(--text-on-dark-soft);
+  }
+</style>
